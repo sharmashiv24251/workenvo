@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 export default function Footer() {
   const links = ["Product", "ESG", "Pricing", "About", "Careers", "Legal"];
 
@@ -10,23 +12,15 @@ export default function Footer() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
-          {/* Wordmark */}
-          <a href="/" className="flex items-center gap-2">
-            <span
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-semibold"
-              style={{ background: "#16855B", fontFamily: "var(--font-sans)" }}
-            >
-              W
-            </span>
-            <span
-              className="text-xl font-normal tracking-tight"
-              style={{
-                fontFamily: "var(--font-serif)",
-                color: "#111827",
-              }}
-            >
-              Workenvo
-            </span>
+          {/* Logo */}
+          <a href="/" className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Workenvo"
+              width={120}
+              height={36}
+              className="h-8 w-auto"
+            />
           </a>
 
           {/* Links */}

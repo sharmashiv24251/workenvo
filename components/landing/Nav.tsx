@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -23,24 +24,16 @@ export default function Nav() {
       }}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Wordmark */}
-        <a
-          href="/"
-          className="flex items-center gap-2"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          <span
-            className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-semibold"
-            style={{ background: "#16855B", fontFamily: "var(--font-sans)" }}
-          >
-            W
-          </span>
-          <span
-            className="text-xl font-normal tracking-tight"
-            style={{ color: "#111827" }}
-          >
-            Workenvo
-          </span>
+        {/* Logo */}
+        <a href="/" className="flex items-center">
+          <Image
+            src="/logo.png"
+            alt="Workenvo"
+            width={120}
+            height={36}
+            className="h-8 w-auto"
+            priority
+          />
         </a>
 
         {/* Center Nav Links */}
