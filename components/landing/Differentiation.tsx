@@ -1,5 +1,7 @@
-import { Fragment } from "react";
-import ScrollReveal from "./ScrollReveal";
+"use client";
+
+import { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 
 const comparisons = [
   { traditional: "Dashboards", workenvo: "Behavioural signals" },
@@ -10,118 +12,237 @@ const comparisons = [
   { traditional: "Siloed tools", workenvo: "Connected intelligence" },
 ];
 
+const tradKeywords = ["Dashboards", "Surveys", "Reports", "Lagging"];
+const workenvoKeywords = ["Signals", "Real-time", "Action", "Capability"];
+
 export default function Differentiation() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const dividerRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Divider shifts right: 50% → 60%
+  const dividerLeft = useTransform(scrollYProgress, [0.2, 0.8], ["50%", "62%"]);
+
+  // Traditional side dims
+  const tradOpacity = useTransform(scrollYProgress, [0.2, 0.8], [1, 0.45]);
+  const tradBlur = useTransform(scrollYProgress, [0.2, 0.8], [0, 1.5]);
+
+  // Workenvo side brightens
+  const workenvoScale = useTransform(scrollYProgress, [0.2, 0.8], [0.97, 1]);
+
   return (
     <section
-      className="relative py-28 px-6 overflow-hidden section-divider"
+      ref={sectionRef}
+      className="relative py-32 px-6 overflow-hidden"
       style={{ background: "#FFFFFF" }}
     >
-      <div className="max-w-7xl mx-auto relative z-10">
-        <ScrollReveal>
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="text-center mb-16"
+        >
+          <p
+            className="text-xs font-semibold tracking-widest uppercase mb-4"
+            style={{ color: "#16855B", fontFamily: "var(--font-sans)" }}
+          >
+            Differentiation
+          </p>
           <h2
-            className="text-4xl lg:text-[48px] leading-tight mb-4 max-w-3xl"
+            className="text-4xl lg:text-[48px] leading-tight mb-4 mx-auto"
             style={{
               fontFamily: "var(--font-serif)",
               color: "#111827",
               fontWeight: 400,
+              maxWidth: "640px",
             }}
           >
-            A new category:{" "}
-            <span style={{ color: "#16855B" }}>Behaviour Intelligence</span>
+            Traditional tools vs Workenvo
           </h2>
-        </ScrollReveal>
-        <ScrollReveal delay={100}>
           <p
-            className="text-lg mb-16 max-w-2xl"
-            style={{ color: "#6B7280", fontFamily: "var(--font-sans)" }}
+            className="text-lg mx-auto"
+            style={{
+              color: "#6B7280",
+              fontFamily: "var(--font-sans)",
+              maxWidth: "520px",
+            }}
           >
             Workenvo is not HR software. It is a system for understanding,
             influencing, and scaling organisational behaviour.
           </p>
-        </ScrollReveal>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-0 max-w-4xl mx-auto rounded-2xl overflow-hidden soft-card">
-          {/* Traditional header */}
-          <ScrollReveal>
+        {/* Split screen */}
+        <div
+          className="relative rounded-2xl overflow-hidden"
+          style={{ minHeight: "500px" }}
+        >
+          {/* Traditional side */}
+          <motion.div
+            style={{ opacity: tradOpacity }}
+            className="absolute inset-0"
+          >
             <div
-              className="p-6"
-              style={{
-                background: "#F9FAFB",
-                borderBottom: "1px solid #F3F4F6",
-                borderRight: "1px solid #F3F4F6",
-              }}
-            >
-              <p
-                className="text-sm font-semibold uppercase tracking-wider"
-                style={{ color: "#9CA3AF", fontFamily: "var(--font-sans)" }}
-              >
-                Traditional Tools
-              </p>
+              className="absolute inset-0"
+              style={{ background: "#F9FAFB" }}
+            />
+            <div className="absolute inset-0 flex flex-col justify-center p-10 lg:p-16 max-w-[50%]">
+              <div className="mb-6">
+                <p
+                  className="text-xs font-semibold uppercase tracking-wider mb-3"
+                  style={{ color: "#9CA3AF", fontFamily: "var(--font-sans)" }}
+                >
+                  Traditional Tools
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {tradKeywords.map((kw, i) => (
+                    <motion.span
+                      key={kw}
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 }}
+                      className="px-3 py-1.5 rounded-full text-sm"
+                      style={{
+                        background: "#F3F4F6",
+                        color: "#9CA3AF",
+                        border: "1px solid #E5E7EB",
+                        fontFamily: "var(--font-sans)",
+                        textDecoration: "line-through",
+                      }}
+                    >
+                      {kw}
+                    </motion.span>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-3">
+                {comparisons.map((row, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    className="flex items-center gap-3"
+                  >
+                    <span
+                      className="w-4 h-4 rounded-full flex-shrink-0 opacity-40"
+                      style={{ background: "#D1D5DB" }}
+                    />
+                    <span
+                      className="text-sm line-through"
+                      style={{ color: "#9CA3AF", fontFamily: "var(--font-sans)" }}
+                    >
+                      {row.traditional}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-          </ScrollReveal>
+          </motion.div>
 
-          {/* Workenvo header */}
-          <ScrollReveal delay={50}>
+          {/* Workenvo side — clips from right */}
+          <motion.div
+            style={{ scale: workenvoScale }}
+            className="absolute inset-0"
+          >
+            {/* Background */}
             <div
-              className="p-6"
+              className="absolute inset-0"
               style={{
-                background: "#ECFDF5",
-                borderBottom: "1px solid #D1FAE5",
+                background:
+                  "linear-gradient(135deg, #F0FDF9 0%, #ECFDF5 100%)",
               }}
-            >
-              <p
-                className="text-sm font-semibold uppercase tracking-wider"
-                style={{ color: "#065F46", fontFamily: "var(--font-sans)" }}
-              >
-                ✦ Workenvo
-              </p>
-            </div>
-          </ScrollReveal>
+            />
 
-          {/* Comparison rows */}
-          {comparisons.map((row, i) => (
-            <Fragment key={i}>
-              <ScrollReveal delay={i * 60}>
-                <div
-                  className="p-5 flex items-center"
-                  style={{
-                    background: i % 2 === 0 ? "#FFFFFF" : "#FAFAFA",
-                    borderBottom: "1px solid #F3F4F6",
-                    borderRight: "1px solid #F3F4F6",
-                  }}
-                >
-                  <span
-                    className="text-base line-through"
-                    style={{ color: "#9CA3AF", fontFamily: "var(--font-sans)" }}
+            {/* Content, positioned right half */}
+            <div className="absolute inset-0 flex flex-col justify-center p-10 lg:p-16 items-end">
+              <div className="max-w-xs w-full">
+                <div className="mb-6">
+                  <p
+                    className="text-xs font-semibold uppercase tracking-wider mb-3"
+                    style={{ color: "#16855B", fontFamily: "var(--font-sans)" }}
                   >
-                    {row.traditional}
-                  </span>
+                    ✦ Workenvo
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {workenvoKeywords.map((kw, i) => (
+                      <motion.span
+                        key={kw}
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        className="px-3 py-1.5 rounded-full text-sm font-medium"
+                        style={{
+                          background: "rgba(22,133,91,0.12)",
+                          color: "#065F46",
+                          border: "1px solid rgba(22,133,91,0.25)",
+                          fontFamily: "var(--font-sans)",
+                        }}
+                      >
+                        {kw}
+                      </motion.span>
+                    ))}
+                  </div>
                 </div>
-              </ScrollReveal>
-              <ScrollReveal delay={i * 60 + 30}>
-                <div
-                  className="p-5 flex items-center gap-3"
-                  style={{
-                    background: i % 2 === 0 ? "#F5FBF8" : "#F0F9F5",
-                    borderBottom: "1px solid #D1FAE5",
-                  }}
-                >
-                  <span
-                    className="w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0"
-                    style={{ background: "#16855B", color: "#FFFFFF" }}
-                  >
-                    ✓
-                  </span>
-                  <span
-                    className="text-base font-medium"
-                    style={{ color: "#111827", fontFamily: "var(--font-sans)" }}
-                  >
-                    {row.workenvo}
-                  </span>
+                <div className="space-y-3">
+                  {comparisons.map((row, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3 + i * 0.08 }}
+                      className="flex items-center gap-3"
+                    >
+                      <span
+                        className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 text-xs"
+                        style={{ background: "#16855B", color: "#FFFFFF" }}
+                      >
+                        ✓
+                      </span>
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: "#111827", fontFamily: "var(--font-sans)" }}
+                      >
+                        {row.workenvo}
+                      </span>
+                    </motion.div>
+                  ))}
                 </div>
-              </ScrollReveal>
-            </Fragment>
-          ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Divider line */}
+          <motion.div
+            ref={dividerRef}
+            className="absolute top-0 bottom-0 z-20 pointer-events-none"
+            style={{
+              left: dividerLeft,
+              background:
+                "linear-gradient(180deg, transparent 0%, #16855B 20%, #16855B 80%, transparent 100%)",
+              width: "2px",
+            }}
+          >
+            {/* Divider dot */}
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-4 h-4 rounded-full"
+              style={{
+                background: "#16855B",
+                boxShadow: "0 0 12px rgba(22,133,91,0.6)",
+              }}
+            />
+          </motion.div>
         </div>
       </div>
     </section>

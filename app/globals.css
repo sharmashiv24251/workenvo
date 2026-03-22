@@ -353,3 +353,23 @@
   from { width: 0%; }
   to   { width: var(--target-width); }
 }
+
+/* Tremble / shake animation for Problem headline */
+@keyframes tremble {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10%  { transform: translateX(-4px) rotate(-0.6deg); }
+  20%  { transform: translateX(4px) rotate(0.6deg); }
+  30%  { transform: translateX(-4px) rotate(-0.6deg); }
+  40%  { transform: translateX(4px) rotate(0.6deg); }
+  50%  { transform: translateX(-3px) rotate(-0.4deg); }
+  60%  { transform: translateX(3px) rotate(0.4deg); }
+  70%  { transform: translateX(-1.5px) rotate(-0.2deg); }
+  80%  { transform: translateX(1.5px) rotate(0.2deg); }
+  90%  { transform: translateX(-0.5px); }
+}
+
+/* Orbital dot animation for CapabilityLoop */
+@keyframes orbit-dot {
+  from { transform: rotate(0deg) translateX(160px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(160px) rotate(-360deg); }
+}
