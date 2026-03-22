@@ -1,11 +1,11 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 
 // ─── Design canvas ────────────────────────────────────────────────────────────
 const DW = 1600;
-const DH = 1000;
+const DH = 900;
 
 // ─── Color tokens ─────────────────────────────────────────────────────────────
 const C = {
@@ -83,7 +83,7 @@ function Icon({
   );
 }
 
-// ─── Panel animation wrapper ──────────────────────────────────────────────────
+// ─── Panel animation wrapper (bottom-to-up + fade) ───────────────────────────
 function Panel({
   children,
   delay = 0,
@@ -95,14 +95,61 @@ function Panel({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, delay, ease: "easeOut" }}
+      transition={{ duration: 0.38, delay, ease: "easeOut" }}
       style={style}
     >
       {children}
     </motion.div>
   );
+}
+
+// ─── Scramble text (random chars → real text on mount) ───────────────────────
+const SCRAMBLE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+function ScrambleText({
+  text,
+  style,
+}: {
+  text: string;
+  style?: React.CSSProperties;
+}) {
+  const [displayed, setDisplayed] = useState(() =>
+    text
+      .split("")
+      .map((c) =>
+        c === " " ? " " : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+      )
+      .join("")
+  );
+
+  useEffect(() => {
+    let frame = 0;
+    const totalFrames = 20;
+    const id = setInterval(() => {
+      frame++;
+      if (frame >= totalFrames) {
+        setDisplayed(text);
+        clearInterval(id);
+        return;
+      }
+      const revealCount = Math.floor((frame / totalFrames) * text.length);
+      setDisplayed(
+        text
+          .split("")
+          .map((c, i) => {
+            if (i < revealCount) return c;
+            if (c === " ") return " ";
+            return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+          })
+          .join("")
+      );
+    }, 32);
+    return () => clearInterval(id);
+  }, [text]);
+
+  return <span style={style}>{displayed}</span>;
 }
 
 // ─── Progress bar ─────────────────────────────────────────────────────────────
@@ -221,15 +268,15 @@ function EmployeesContent() {
           </div>
           <h1
             style={{
-              fontSize: 42,
-              fontWeight: 900,
+              fontSize: 34,
+              fontWeight: 700,
               color: C.onSurface,
               letterSpacing: "-0.03em",
               lineHeight: 1,
               fontFamily: "Inter, sans-serif",
             }}
           >
-            My Growth
+            <ScrambleText text="My Growth" />
           </h1>
         </div>
         <div style={{ display: "flex", gap: 12 }}>
@@ -273,18 +320,17 @@ function EmployeesContent() {
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
           gridTemplateRows: "1fr 1fr",
-          gap: 24,
+          gap: 20,
           minHeight: 0,
         }}
       >
-        {/* Main card — col-span 8 */}
-        <Panel
-          delay={0.08}
+        {/* Main card — col-span 8 — stays still */}
+        <div
           style={{
             gridColumn: "span 8",
             background: C.white,
-            borderRadius: 20,
-            padding: "32px 40px",
+            borderRadius: 48,
+            padding: "20px 28px",
             boxShadow: ambientShadow,
             display: "flex",
             flexDirection: "column",
@@ -295,7 +341,7 @@ function EmployeesContent() {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "flex-start",
-              marginBottom: 16,
+              marginBottom: 10,
             }}
           >
             <div>
@@ -324,7 +370,7 @@ function EmployeesContent() {
               <div
                 style={{
                   fontSize: 42,
-                  fontWeight: 900,
+                  fontWeight: 700,
                   color: C.primary,
                   fontFamily: "Inter, sans-serif",
                   lineHeight: 1,
@@ -349,7 +395,7 @@ function EmployeesContent() {
           {/* Bar chart */}
           <div
             style={{
-              height: 180,
+              height: 130,
               display: "flex",
               alignItems: "flex-end",
               gap: 8,
@@ -359,13 +405,16 @@ function EmployeesContent() {
             }}
           >
             {barHeights.map((h, i) => (
-              <div
+              <motion.div
                 key={i}
+                initial={{ height: "0%" }}
+                animate={{ height: `${h}%` }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   flex: 1,
-                  height: `${h}%`,
                   background: barColors[i],
-                  borderRadius: "8px 8px 0 0",
+                  borderRadius: "48px 48px 0 0",
+                  alignSelf: "flex-end",
                 }}
               />
             ))}
@@ -375,8 +424,8 @@ function EmployeesContent() {
           <div
             style={{
               borderTop: `1px solid ${C.surfaceContainer}`,
-              paddingTop: 24,
-              marginTop: 24,
+              paddingTop: 14,
+              marginTop: 14,
               display: "grid",
               gridTemplateColumns: "repeat(5, 1fr)",
             }}
@@ -415,7 +464,7 @@ function EmployeesContent() {
               </div>
             ))}
           </div>
-        </Panel>
+        </div>
 
         {/* AI Panel — col-span 4 */}
         <Panel
@@ -423,8 +472,8 @@ function EmployeesContent() {
           style={{
             gridColumn: "span 4",
             background: C.primaryContainer,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -554,8 +603,8 @@ function EmployeesContent() {
           style={{
             gridColumn: "span 7",
             background: C.surfaceLow,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
           }}
         >
           <h2
@@ -758,8 +807,8 @@ function EmployeesContent() {
           style={{
             gridColumn: "span 5",
             background: C.white,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
             boxShadow: ambientShadow,
             display: "flex",
             flexDirection: "column",
@@ -805,7 +854,7 @@ function EmployeesContent() {
               <div
                 style={{
                   fontSize: 40,
-                  fontWeight: 900,
+                  fontWeight: 700,
                   color: C.primary,
                   fontFamily: "Inter, sans-serif",
                   lineHeight: 1,
@@ -969,15 +1018,15 @@ function ManagersContent() {
           </div>
           <h1
             style={{
-              fontSize: 42,
-              fontWeight: 900,
+              fontSize: 34,
+              fontWeight: 700,
               color: C.onSurface,
               letterSpacing: "-0.03em",
               lineHeight: 1,
               fontFamily: "Inter, sans-serif",
             }}
           >
-            Team Performance
+            <ScrambleText text="Team Performance" />
           </h1>
         </div>
         <div style={{ display: "flex", gap: 12 }}>
@@ -1021,18 +1070,17 @@ function ManagersContent() {
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
           gridTemplateRows: "1fr 1fr",
-          gap: 24,
+          gap: 20,
           minHeight: 0,
         }}
       >
-        {/* Main card — col-span 8 */}
-        <Panel
-          delay={0.08}
+        {/* Main card — col-span 8 — stays still */}
+        <div
           style={{
             gridColumn: "span 8",
             background: C.white,
-            borderRadius: 20,
-            padding: "32px 40px",
+            borderRadius: 48,
+            padding: "20px 28px",
             boxShadow: ambientShadow,
             display: "flex",
             flexDirection: "column",
@@ -1072,7 +1120,7 @@ function ManagersContent() {
               <div
                 style={{
                   fontSize: 42,
-                  fontWeight: 900,
+                  fontWeight: 700,
                   color: C.primary,
                   fontFamily: "Inter, sans-serif",
                   lineHeight: 1,
@@ -1097,7 +1145,7 @@ function ManagersContent() {
           {/* Bar chart */}
           <div
             style={{
-              height: 180,
+              height: 130,
               display: "flex",
               alignItems: "flex-end",
               gap: 8,
@@ -1107,13 +1155,16 @@ function ManagersContent() {
             }}
           >
             {barHeights.map((h, i) => (
-              <div
+              <motion.div
                 key={i}
+                initial={{ height: "0%" }}
+                animate={{ height: `${h}%` }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   flex: 1,
-                  height: `${h}%`,
                   background: barColors[i],
-                  borderRadius: "8px 8px 0 0",
+                  borderRadius: "48px 48px 0 0",
+                  alignSelf: "flex-end",
                 }}
               />
             ))}
@@ -1123,8 +1174,8 @@ function ManagersContent() {
           <div
             style={{
               borderTop: `1px solid ${C.surfaceContainer}`,
-              paddingTop: 24,
-              marginTop: 24,
+              paddingTop: 14,
+              marginTop: 14,
               display: "grid",
               gridTemplateColumns: "repeat(7, 1fr)",
             }}
@@ -1157,7 +1208,7 @@ function ManagersContent() {
               </div>
             ))}
           </div>
-        </Panel>
+        </div>
 
         {/* AI Panel — col-span 4 */}
         <Panel
@@ -1165,8 +1216,8 @@ function ManagersContent() {
           style={{
             gridColumn: "span 4",
             background: C.primaryContainer,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -1290,8 +1341,8 @@ function ManagersContent() {
           style={{
             gridColumn: "span 7",
             background: C.surfaceLow,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
           }}
         >
           <h2
@@ -1446,8 +1497,8 @@ function ManagersContent() {
           style={{
             gridColumn: "span 5",
             background: C.white,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
             boxShadow: ambientShadow,
             display: "flex",
             flexDirection: "column",
@@ -1572,15 +1623,15 @@ function LeadershipContent() {
           </div>
           <h1
             style={{
-              fontSize: 42,
-              fontWeight: 900,
+              fontSize: 34,
+              fontWeight: 700,
               color: C.onSurface,
               letterSpacing: "-0.03em",
               lineHeight: 1,
               fontFamily: "Inter, sans-serif",
             }}
           >
-            Capability tracking
+            <ScrambleText text="Capability tracking" />
           </h1>
         </div>
         <div style={{ display: "flex", gap: 12 }}>
@@ -1624,18 +1675,17 @@ function LeadershipContent() {
           display: "grid",
           gridTemplateColumns: "repeat(12, 1fr)",
           gridTemplateRows: "1fr 1fr",
-          gap: 24,
+          gap: 20,
           minHeight: 0,
         }}
       >
-        {/* Main card — col-span 8 */}
-        <Panel
-          delay={0.08}
+        {/* Main card — col-span 8 — stays still */}
+        <div
           style={{
             gridColumn: "span 8",
             background: C.white,
-            borderRadius: 20,
-            padding: "32px 40px",
+            borderRadius: 48,
+            padding: "20px 28px",
             boxShadow: ambientShadow,
             display: "flex",
             flexDirection: "column",
@@ -1675,7 +1725,7 @@ function LeadershipContent() {
               <div
                 style={{
                   fontSize: 42,
-                  fontWeight: 900,
+                  fontWeight: 700,
                   color: C.primary,
                   fontFamily: "Inter, sans-serif",
                   lineHeight: 1,
@@ -1700,7 +1750,7 @@ function LeadershipContent() {
           {/* Bar chart */}
           <div
             style={{
-              height: 180,
+              height: 130,
               display: "flex",
               alignItems: "flex-end",
               gap: 8,
@@ -1710,13 +1760,16 @@ function LeadershipContent() {
             }}
           >
             {barHeights.map((h, i) => (
-              <div
+              <motion.div
                 key={i}
+                initial={{ height: "0%" }}
+                animate={{ height: `${h}%` }}
+                transition={{ duration: 0.5, delay: 0.1 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
                 style={{
                   flex: 1,
-                  height: `${h}%`,
                   background: barColors[i],
-                  borderRadius: "8px 8px 0 0",
+                  borderRadius: "48px 48px 0 0",
+                  alignSelf: "flex-end",
                 }}
               />
             ))}
@@ -1726,8 +1779,8 @@ function LeadershipContent() {
           <div
             style={{
               borderTop: `1px solid ${C.surfaceContainer}`,
-              paddingTop: 24,
-              marginTop: 24,
+              paddingTop: 14,
+              marginTop: 14,
               display: "grid",
               gridTemplateColumns: "repeat(4, 1fr)",
             }}
@@ -1765,7 +1818,7 @@ function LeadershipContent() {
               </div>
             ))}
           </div>
-        </Panel>
+        </div>
 
         {/* AI Panel — col-span 4 */}
         <Panel
@@ -1773,8 +1826,8 @@ function LeadershipContent() {
           style={{
             gridColumn: "span 4",
             background: C.primaryContainer,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -1898,8 +1951,8 @@ function LeadershipContent() {
           style={{
             gridColumn: "span 7",
             background: C.surfaceLow,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
           }}
         >
           <h2
@@ -2054,8 +2107,8 @@ function LeadershipContent() {
           style={{
             gridColumn: "span 5",
             background: C.white,
-            borderRadius: 20,
-            padding: 32,
+            borderRadius: 48,
+            padding: 22,
             boxShadow: ambientShadow,
             display: "flex",
             flexDirection: "column",
@@ -2189,7 +2242,7 @@ export default function WorkenvoDashboard({
       ref={containerRef}
       style={{
         width: "100%",
-        aspectRatio: "16/10",
+        aspectRatio: "16/9",
         position: "relative",
         overflow: "hidden",
       }}
@@ -2208,18 +2261,9 @@ export default function WorkenvoDashboard({
           fontFamily: "Inter, sans-serif",
         }}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-            style={{ display: "flex", width: "100%", height: "100%" }}
-          >
-            {/* ── Sidebar ── */}
-            <Panel
-              delay={0}
+        <div style={{ display: "flex", width: "100%", height: "100%" }}>
+            {/* ── Sidebar — never remounts, no animation ── */}
+            <div
               style={{
                 width: 280,
                 minWidth: 280,
@@ -2232,38 +2276,13 @@ export default function WorkenvoDashboard({
               }}
             >
               {/* Logo */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  marginBottom: 32,
-                }}
-              >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    background: `linear-gradient(135deg, ${C.primary}, ${C.primaryContainer})`,
-                    borderRadius: 12,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Icon name="eco" size={20} color={C.white} />
-                </div>
-                <span
-                  style={{
-                    fontSize: 22,
-                    fontWeight: 700,
-                    color: C.primary,
-                    fontFamily: "Inter, sans-serif",
-                  }}
-                >
-                  Workenvo
-                </span>
+              <div style={{ marginBottom: 20 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo.png"
+                  alt="Workenvo"
+                  style={{ height: 34, width: "auto", display: "block" }}
+                />
               </div>
 
               {/* Nav label */}
@@ -2366,25 +2385,25 @@ export default function WorkenvoDashboard({
                   </div>
                 </div>
               </div>
-            </Panel>
+            </div>
 
             {/* ── Main area ── */}
             <div
               style={{
                 flex: 1,
-                padding: "40px 48px",
+                padding: "24px 40px",
                 display: "flex",
                 flexDirection: "column",
-                gap: 24,
+                gap: 16,
                 overflow: "hidden",
               }}
             >
-              {activeTab === "employees" && <EmployeesContent />}
-              {activeTab === "managers" && <ManagersContent />}
-              {activeTab === "leadership" && <LeadershipContent />}
+              {/* key remounts only this div — sidebar stays mounted, no flash */}
+              {activeTab === "employees" && <EmployeesContent key="employees" />}
+              {activeTab === "managers" && <ManagersContent key="managers" />}
+              {activeTab === "leadership" && <LeadershipContent key="leadership" />}
             </div>
-          </motion.div>
-        </AnimatePresence>
+        </div>
       </div>
     </div>
   );

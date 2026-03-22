@@ -74,15 +74,15 @@ export default function ProductSection() {
 
         <div className="relative z-10 w-full max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-5">
+          <div className="text-center mb-3">
             <p
-              className="text-xs font-semibold tracking-widest uppercase mb-2"
+              className="text-xs font-semibold tracking-widest uppercase mb-1.5"
               style={{ color: "#16855B", fontFamily: "var(--font-sans)" }}
             >
               Product Experience
             </p>
             <h2
-              className="text-3xl lg:text-[40px] leading-tight mb-2 mx-auto"
+              className="text-2xl lg:text-[32px] leading-tight mb-0 mx-auto"
               style={{
                 fontFamily: "var(--font-serif)",
                 color: "#111827",
@@ -95,12 +95,12 @@ export default function ProductSection() {
           </div>
 
           {/* Persona tabs */}
-          <div className="flex justify-center gap-2 mb-5">
+          <div className="flex justify-center gap-2 mb-3">
             {personas.map((p, i) => (
               <button
                 key={p.id}
                 onClick={() => setActiveIdx(i)}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-400"
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-400"
                 style={{
                   background: activeIdx === i ? "#16855B" : "#F9FAFB",
                   color: activeIdx === i ? "#FFFFFF" : "#6B7280",
@@ -116,12 +116,9 @@ export default function ProductSection() {
             ))}
           </div>
 
-          {/* Dashboard — 16:10, scales like an image */}
-          <motion.div
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            style={{ position: "relative" }}
-          >
+          {/* Dashboard — 16:9, width-capped so it always fits in viewport height */}
+          <div style={{ maxWidth: "calc((100vh - 220px) * 1.44)", margin: "0 auto" }}>
+          <div style={{ position: "relative" }}>
             {/* Glow beneath */}
             <div
               className="absolute -bottom-3 left-1/2 -translate-x-1/2 pointer-events-none"
@@ -144,10 +141,11 @@ export default function ProductSection() {
             >
               <WorkenvoDashboard activeTab={persona.id} />
             </div>
-          </motion.div>
+          </div>
+          </div>
 
           {/* Feature pills */}
-          <div className="flex flex-wrap justify-center gap-2 mt-5">
+          <div className="flex flex-wrap justify-center gap-2 mt-3">
             {personas[activeIdx].pills.map((pill, i) => (
               <motion.span
                 key={i}
@@ -161,18 +159,6 @@ export default function ProductSection() {
           </div>
         </div>
 
-        {/* Scroll hint */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          style={{ color: "#9CA3AF" }}
-        >
-          <p className="text-xs" style={{ fontFamily: "var(--font-sans)" }}>
-            scroll to explore
-          </p>
-          <div className="w-px h-6" style={{ background: "linear-gradient(to bottom, #9CA3AF, transparent)" }} />
-        </motion.div>
       </div>
     </section>
   );
