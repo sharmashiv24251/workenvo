@@ -43,14 +43,6 @@ const outcomes = [
     wide: false,
     rotation: -1.5,
   },
-  {
-    emoji: "🚀",
-    label: "Future Readiness",
-    quote: "We are building capability, not just tracking it.",
-    desc: "Build organisations that can adapt.",
-    wide: false,
-    rotation: 2,
-  },
 ];
 
 export default function OutcomesSection() {

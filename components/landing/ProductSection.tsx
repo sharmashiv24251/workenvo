@@ -181,8 +181,8 @@ export default function ProductSection() {
                   </div>
                 </div>
 
-                {/* Screen content — morphs between tabs */}
-                <div className="p-5" style={{ minHeight: "240px" }}>
+                {/* Screen content — fixed height prevents layout shift on tab change */}
+                <div className="p-5" style={{ height: "240px", overflow: "hidden" }}>
                   <AnimatePresence mode="sync">
                     <motion.div
                       key={persona.id}

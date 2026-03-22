@@ -188,8 +188,8 @@ export default function AILayer() {
             </span>
           </div>
 
-          {/* Notifications */}
-          <div className="p-3 space-y-2">
+          {/* Notifications — fixed height so section doesn't shift as items appear */}
+          <div className="p-3 space-y-2" style={{ height: "320px", overflow: "hidden" }}>
             <AnimatePresence>
               {notifications.slice(0, visibleCount).map((notif, i) => (
                 <motion.div
@@ -255,18 +255,6 @@ export default function AILayer() {
               ))}
             </AnimatePresence>
 
-            {/* Loading placeholder */}
-            {visibleCount === 0 && (
-              <div className="space-y-2 py-1">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="h-16 rounded-xl animate-pulse"
-                    style={{ background: "#F9FAFB", border: "1px solid #F3F4F6" }}
-                  />
-                ))}
-              </div>
-            )}
           </div>
         </motion.div>
 

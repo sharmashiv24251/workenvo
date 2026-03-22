@@ -253,8 +253,8 @@ export default function ProofCard() {
                 </span>
               </div>
 
-              {/* Fields */}
-              <div className="p-5 space-y-3">
+              {/* Fields — fixed height so scan reveal doesn't shift surrounding layout */}
+              <div className="p-5 space-y-3" style={{ height: "296px", overflow: "hidden" }}>
                 <AnimatePresence>
                   {insightFields.slice(0, visibleFields).map((field, i) => (
                     <motion.div
@@ -302,21 +302,6 @@ export default function ProofCard() {
                   ))}
                 </AnimatePresence>
 
-                {/* Placeholder lines while not yet scanned */}
-                {visibleFields === 0 && (
-                  <div className="space-y-3 py-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="h-16 rounded-xl"
-                        style={{
-                          background: "#F9FAFB",
-                          border: "1px solid #F3F4F6",
-                        }}
-                      />
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           </motion.div>
