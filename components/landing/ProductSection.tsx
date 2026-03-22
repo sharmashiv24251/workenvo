@@ -1,55 +1,26 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useMotionValueEvent, useAnimation } from "motion/react";
+import { motion, useScroll, useMotionValueEvent, useAnimation } from "motion/react";
+import WorkenvoDashboard from "./WorkenvoDashboard";
 
 const personas = [
   {
-    id: "employees",
+    id: "employees" as const,
     label: "Employees",
     emoji: "🌟",
-    screen: {
-      title: "My Activity",
-      subtitle: "Week of March 17–23",
-      items: [
-        { icon: "✅", label: "3 behaviours logged", color: "#16855B" },
-        { icon: "🏆", label: "Leadership badge earned", color: "#D97706" },
-        { icon: "📋", label: "Feedback survey due", color: "#6366F1" },
-        { icon: "💡", label: "AI nudge: 1-to-1 reminder", color: "#0891B2" },
-      ],
-    },
     pills: ["Log behaviours", "Earn rewards", "Participate in surveys", "Receive AI nudges"],
   },
   {
-    id: "managers",
+    id: "managers" as const,
     label: "Managers",
     emoji: "🧭",
-    screen: {
-      title: "Team Pulse",
-      subtitle: "Marketing · 12 reports",
-      items: [
-        { icon: "🔴", label: "Burnout risk: 2 team members", color: "#EF4444" },
-        { icon: "⚠️", label: "3 reviews overdue", color: "#F59E0B" },
-        { icon: "📉", label: "Engagement −18% this week", color: "#EF4444" },
-        { icon: "💡", label: "Action: Schedule 1-to-1s", color: "#16855B" },
-      ],
-    },
     pills: ["Real-time alerts", "Behaviour insights", "Recommended actions", "Performance tracking"],
   },
   {
-    id: "leadership",
+    id: "leadership" as const,
     label: "HR & Leadership",
     emoji: "🏢",
-    screen: {
-      title: "Org Overview",
-      subtitle: "Q1 2026 · 847 employees",
-      items: [
-        { icon: "📊", label: "Capability score: 74/100", color: "#16855B" },
-        { icon: "🌍", label: "ESG behaviours: 89% tracked", color: "#0891B2" },
-        { icon: "⚠️", label: "Culture drift: Finance team", color: "#F59E0B" },
-        { icon: "📄", label: "CSRD report ready", color: "#16855B" },
-      ],
-    },
     pills: ["Org-wide insights", "Capability tracking", "ESG metrics", "Risk detection"],
   },
 ];
@@ -71,7 +42,7 @@ export default function ProductSection() {
     else setActiveIdx(2);
   });
 
-  // Staggered chip slide on every tab change — chips stay mounted, no flash
+  // Staggered chip slide on every tab change
   useEffect(() => {
     chipControls.set({ y: 6 });
     chipControls.start((i) => ({
@@ -102,8 +73,8 @@ export default function ProductSection() {
         />
 
         <div className="relative z-10 w-full max-w-6xl mx-auto">
-          {/* Header — compact for sticky */}
-          <div className="text-center mb-6">
+          {/* Header */}
+          <div className="text-center mb-5">
             <p
               className="text-xs font-semibold tracking-widest uppercase mb-2"
               style={{ color: "#16855B", fontFamily: "var(--font-sans)" }}
@@ -123,8 +94,8 @@ export default function ProductSection() {
             </h2>
           </div>
 
-          {/* Persona tabs — show current, scroll drives it */}
-          <div className="flex justify-center gap-2 mb-6">
+          {/* Persona tabs */}
+          <div className="flex justify-center gap-2 mb-5">
             {personas.map((p, i) => (
               <button
                 key={p.id}
@@ -145,152 +116,52 @@ export default function ProductSection() {
             ))}
           </div>
 
-
-          {/* Layout: device + pills */}
-          <div className="flex flex-col items-center">
-            {/* Laptop frame */}
-            <motion.div
-              className="relative w-full max-w-xl"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          {/* Dashboard — 16:10, scales like an image */}
+          <motion.div
+            animate={{ y: [0, -5, 0] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            style={{ position: "relative" }}
+          >
+            {/* Glow beneath */}
+            <div
+              className="absolute -bottom-3 left-1/2 -translate-x-1/2 pointer-events-none"
+              style={{
+                width: "60%",
+                height: "40px",
+                background: "radial-gradient(ellipse, rgba(22,133,91,0.18) 0%, transparent 70%)",
+                filter: "blur(14px)",
+                zIndex: 0,
+              }}
+            />
+            <div
+              style={{
+                position: "relative",
+                zIndex: 1,
+                borderRadius: 18,
+                overflow: "hidden",
+                boxShadow: "0 32px 80px rgba(0,0,0,0.14), 0 0 0 1px rgba(0,0,0,0.05)",
+              }}
             >
-              {/* Green glow beneath frame */}
-              <div
-                className="absolute -bottom-4 left-1/2 -translate-x-1/2 pointer-events-none"
-                style={{
-                  width: "70%",
-                  height: "40px",
-                  background: "radial-gradient(ellipse, rgba(22,133,91,0.2) 0%, transparent 70%)",
-                  filter: "blur(12px)",
-                }}
-              />
-              {/* Screen body */}
-              <div
-                className="rounded-2xl overflow-hidden"
-                style={{
-                  background: "#1E293B",
-                  border: "8px solid #334155",
-                  boxShadow: "0 30px 70px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.04)",
-                }}
-              >
-                {/* Browser bar */}
-                <div
-                  className="flex items-center gap-2 px-4 py-2.5"
-                  style={{ background: "#0F172A", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-                >
-                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 opacity-70" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500 opacity-70" />
-                  <div className="w-2.5 h-2.5 rounded-full bg-green-500 opacity-70" />
-                  <div
-                    className="flex-1 mx-4 h-5 rounded-md flex items-center px-3"
-                    style={{ background: "rgba(255,255,255,0.06)" }}
-                  >
-                    <span className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
-                      app.workenvo.com/dashboard
-                    </span>
-                  </div>
-                </div>
-
-                {/* Screen content — fixed height prevents layout shift on tab change */}
-                <div className="p-5" style={{ height: "240px", overflow: "hidden" }}>
-                  <AnimatePresence mode="sync">
-                    <motion.div
-                      key={persona.id}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -12 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                    >
-                      {/* Screen header */}
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3
-                            className="text-sm font-semibold"
-                            style={{ color: "#F1F5F9", fontFamily: "var(--font-sans)" }}
-                          >
-                            {persona.screen.title}
-                          </h3>
-                          <p
-                            className="text-xs mt-0.5"
-                            style={{ color: "#64748B", fontFamily: "var(--font-sans)" }}
-                          >
-                            {persona.screen.subtitle}
-                          </p>
-                        </div>
-                        <div
-                          className="px-2.5 py-1 rounded-full text-xs font-medium"
-                          style={{
-                            background: "rgba(22,133,91,0.2)",
-                            color: "#34D399",
-                            border: "1px solid rgba(22,133,91,0.3)",
-                            fontFamily: "var(--font-sans)",
-                          }}
-                        >
-                          Live
-                        </div>
-                      </div>
-
-                      {/* Items — stagger in */}
-                      <div className="space-y-2">
-                        {persona.screen.items.map((item, i) => (
-                          <motion.div
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: i * 0.06 }}
-                            className="flex items-center gap-3 rounded-lg px-3 py-2.5"
-                            style={{
-                              background: "rgba(255,255,255,0.04)",
-                              border: "1px solid rgba(255,255,255,0.06)",
-                            }}
-                          >
-                            <span className="text-sm">{item.icon}</span>
-                            <span
-                              className="text-xs flex-1"
-                              style={{ color: "#CBD5E1", fontFamily: "var(--font-sans)" }}
-                            >
-                              {item.label}
-                            </span>
-                            <div
-                              className="w-1.5 h-1.5 rounded-full shrink-0"
-                              style={{ background: item.color, opacity: 0.8 }}
-                            />
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* Laptop base */}
-              <div
-                className="mx-auto h-2.5 rounded-b-lg"
-                style={{ width: "80%", background: "#CBD5E1" }}
-              />
-              <div
-                className="mx-auto h-1.5 rounded-b-xl"
-                style={{ width: "90%", background: "#E2E8F0" }}
-              />
-            </motion.div>
-
-            {/* Feature pills — stable keys, imperatively staggered, zero opacity touch */}
-            <div className="flex flex-wrap justify-center gap-2 mt-5">
-              {personas[activeIdx].pills.map((pill, i) => (
-                <motion.span
-                  key={i}
-                  custom={i}
-                  animate={chipControls}
-                  className="tag-green px-4 py-2 rounded-full text-xs font-medium"
-                >
-                  {pill}
-                </motion.span>
-              ))}
+              <WorkenvoDashboard activeTab={persona.id} />
             </div>
+          </motion.div>
+
+          {/* Feature pills */}
+          <div className="flex flex-wrap justify-center gap-2 mt-5">
+            {personas[activeIdx].pills.map((pill, i) => (
+              <motion.span
+                key={i}
+                custom={i}
+                animate={chipControls}
+                className="tag-green px-4 py-2 rounded-full text-xs font-medium"
+              >
+                {pill}
+              </motion.span>
+            ))}
           </div>
         </div>
 
-        {/* Scroll hint — only shows at top */}
+        {/* Scroll hint */}
         <motion.div
           className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
           animate={{ opacity: [0.5, 1, 0.5] }}
