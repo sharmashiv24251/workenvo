@@ -115,14 +115,9 @@ function ScrambleText({
   text: string;
   style?: React.CSSProperties;
 }) {
-  const [displayed, setDisplayed] = useState(() =>
-    text
-      .split("")
-      .map((c) =>
-        c === " " ? " " : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
-      )
-      .join("")
-  );
+  // Initialize with the real text so SSR and the first client render match.
+  // The scramble animation kicks in after mount via the useEffect below.
+  const [displayed, setDisplayed] = useState(text);
 
   useEffect(() => {
     let frame = 0;

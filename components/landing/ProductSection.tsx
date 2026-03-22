@@ -74,7 +74,7 @@ export default function ProductSection() {
 
         <div className="relative z-10 w-full max-w-6xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-3">
+          <div className="text-center mb-6">
             <p
               className="text-xs font-semibold tracking-widest uppercase mb-1.5"
               style={{ color: "#16855B", fontFamily: "var(--font-sans)" }}
@@ -95,7 +95,7 @@ export default function ProductSection() {
           </div>
 
           {/* Persona tabs */}
-          <div className="flex justify-center gap-2 mb-3">
+          <div className="flex justify-center gap-2 mb-5">
             {personas.map((p, i) => (
               <button
                 key={p.id}
@@ -117,7 +117,7 @@ export default function ProductSection() {
           </div>
 
           {/* Dashboard — 16:9, width-capped so it always fits in viewport height */}
-          <div style={{ maxWidth: "calc((100vh - 220px) * 1.44)", margin: "0 auto" }}>
+          <div style={{ maxWidth: "calc((100vh - 270px) * 1.44)", margin: "0 auto" }}>
           <div style={{ position: "relative" }}>
             {/* Glow beneath */}
             <div
@@ -145,7 +145,7 @@ export default function ProductSection() {
           </div>
 
           {/* Feature pills */}
-          <div className="flex flex-wrap justify-center gap-2 mt-3">
+          <div className="flex flex-wrap justify-center gap-2 mt-5">
             {personas[activeIdx].pills.map((pill, i) => (
               <motion.span
                 key={i}
