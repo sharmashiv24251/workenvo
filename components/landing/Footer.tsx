@@ -91,7 +91,16 @@ export default function Footer() {
 
         <div style={{ height: "clamp(16px, 3vw, 48px)" }} />
 
-        <FitText text="workenvo" style={{ color: "#111827" }} />
+        <FitText
+          text="workenvo"
+          style={{
+            background: "linear-gradient(to bottom, #111827 0%, #6B7280 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            color: "transparent",
+          }}
+        />
       </div>
     </footer>
   );
