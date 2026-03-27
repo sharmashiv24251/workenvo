@@ -15,9 +15,27 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Workenvo — Behaviour Intelligence Platform",
+  title: "Turn behaviour into capability",
   description:
-    "Turn behaviour into organisational capability. Workenvo helps you detect behavioural signals early, reinforce the right actions, and build the capabilities your organisation needs to perform and scale.",
+    "See how your organisation is really operating today and build the capability you'll need tomorrow.",
+  openGraph: {
+    title: "Turn behaviour into capability",
+    description:
+      "See how your organisation is really operating today and build the capability you'll need tomorrow.",
+    images: [
+      {
+        url: "/og.png",
+        alt: "Workenvo Open Graph preview",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Turn behaviour into capability",
+    description:
+      "See how your organisation is really operating today and build the capability you'll need tomorrow.",
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({
