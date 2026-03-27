@@ -46,7 +46,7 @@ function FitText({
           position: "absolute",
           visibility: "hidden",
           whiteSpace: "nowrap",
-          fontFamily: "var(--font-serif)",
+          fontFamily: "var(--font-brand), var(--font-sans), sans-serif",
           fontWeight: 900,
           fontSize: "100px",
           pointerEvents: "none",
@@ -60,7 +60,7 @@ function FitText({
         style={{
           display: "block",
           whiteSpace: "nowrap",
-          fontFamily: "var(--font-serif)",
+          fontFamily: "var(--font-brand), var(--font-sans), sans-serif",
           fontWeight: 900,
           fontSize: `${fontSize}px`,
           lineHeight: 1,
