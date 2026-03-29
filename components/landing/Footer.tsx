@@ -1,106 +1,89 @@
-"use client";
+import Link from "next/link";
+import BrandLogo from "@/components/BrandLogo";
 
-import { useRef, useEffect, useState, useCallback } from "react";
+const productLinks = [
+  { label: "Culture", href: "/dashboard/envo-culture" },
+  { label: "Performance", href: "/dashboard/envo-performance" },
+  { label: "Sustainability", href: "/dashboard/envo-sustainability" },
+  { label: "Employees", href: "/dashboard/envo-employees" },
+];
 
-/* ── FitText — scales font-size so text fills its container exactly ────── */
-function FitText({
-  text,
-  style,
-}: {
-  text: string;
-  style?: React.CSSProperties;
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const probeRef = useRef<HTMLSpanElement>(null);
-  const [fontSize, setFontSize] = useState(120);
+const companyLinks = [
+  { label: "Support", href: "#" },
+  { label: "Privacy Policy", href: "#" },
+  { label: "Terms of Service", href: "#" },
+  { label: "API Docs", href: "#" },
+];
 
-  const fit = useCallback(() => {
-    const container = containerRef.current;
-    const probe = probeRef.current;
-    if (!container || !probe) return;
-    const available = container.offsetWidth;
-    if (available === 0) return;
-    // Measure at a known base size, then scale proportionally
-    probe.style.fontSize = "100px";
-    const textWidth = probe.scrollWidth;
-    if (textWidth === 0) return;
-    setFontSize((available / textWidth) * 100);
-  }, []);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(container);
-    return () => ro.disconnect();
-  }, [fit]);
-
-  return (
-    <div ref={containerRef} style={{ width: "100%", lineHeight: 1, position: "relative", overflow: "hidden" }}>
-      {/* Invisible probe at exactly 100px — clipped by overflow:hidden so it never causes horizontal scroll */}
-      <span
-        ref={probeRef}
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          visibility: "hidden",
-          whiteSpace: "nowrap",
-          fontFamily: "var(--font-brand), var(--font-sans), sans-serif",
-          fontWeight: 900,
-          fontSize: "100px",
-          pointerEvents: "none",
-          ...style,
-        }}
-      >
-        {text}
-      </span>
-      {/* Visible text at computed size */}
-      <span
-        style={{
-          display: "block",
-          whiteSpace: "nowrap",
-          fontFamily: "var(--font-brand), var(--font-sans), sans-serif",
-          fontWeight: 900,
-          fontSize: `${fontSize}px`,
-          lineHeight: 1,
-          ...style,
-        }}
-      >
-        {text}
-      </span>
-    </div>
-  );
-}
-
-/* ── Footer ────────────────────────────────────────────────────────────── */
 export default function Footer() {
   return (
-    <footer
-      style={{
-        background: "#FFFFFF",
-        paddingTop: "clamp(48px, 8vw, 120px)",
-        paddingBottom: "clamp(32px, 5vw, 72px)",
-      }}
-    >
-      <div className="max-w-7xl mx-auto px-6" style={{ position: "relative" }}>
-        <FitText
-          text="we don't measure work, we shape behavior"
-          style={{ color: "#16855B" }}
-        />
+    <footer className="fixed bottom-0 left-0 right-0 z-0 bg-[#111111]">
+      <div className="mx-auto max-w-7xl px-6 pb-8 pt-10 md:px-12">
 
-        <div style={{ height: "clamp(16px, 3vw, 48px)" }} />
+        {/* Main grid */}
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-[1fr_140px_180px]">
 
-        <FitText
-          text="workenvo"
-          style={{
-            background: "linear-gradient(to bottom, #111827 0%, #6B7280 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        />
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <BrandLogo
+              logoHeightClassName="h-8"
+              textClassName="text-[1.5rem] tracking-[-0.04em] !text-white"
+              imageClassName="brightness-0 invert"
+            />
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
+              The intelligence layer for modern HR leadership. Built for CHROs who move fast.
+            </p>
+          </div>
+
+          {/* Product */}
+          <div>
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+              Product
+            </p>
+            <ul className="space-y-3.5">
+              {productLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-white/55 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+              Company
+            </p>
+            <ul className="space-y-3.5">
+              {companyLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-white/55 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-6 md:flex-row md:items-center">
+          <p className="text-xs text-white/25">
+            © 2025 Workenvo, Inc. All rights reserved.
+          </p>
+          <p className="text-xs text-white/20">
+            Built for the future of work.
+          </p>
+        </div>
+
       </div>
     </footer>
   );

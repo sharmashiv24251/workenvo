@@ -1,29 +1,89 @@
+import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 
-const footerLinks = ["Support", "Privacy", "Terms", "API Docs"];
+const productLinks = [
+  { label: "Culture", href: "/dashboard/envo-culture" },
+  { label: "Performance", href: "/dashboard/envo-performance" },
+  { label: "Sustainability", href: "/dashboard/envo-sustainability" },
+  { label: "Employees", href: "/dashboard/envo-employees" },
+];
+
+const companyLinks = [
+  { label: "Support", href: "#" },
+  { label: "Privacy Policy", href: "#" },
+  { label: "Terms of Service", href: "#" },
+  { label: "API Docs", href: "#" },
+];
 
 export default function DashboardFooter() {
   return (
-    <footer className="pb-12 pt-20">
-      <div className="flex flex-col items-center justify-between gap-8 border-t border-[#f0edec] pt-12 md:flex-row">
-        <BrandLogo
-          logoHeightClassName="h-7"
-          textClassName="text-xl tracking-[-0.03em]"
-        />
+    <footer className="fixed bottom-0 left-0 right-0 z-0 bg-[#141414] md:left-64">
+      <div className="mx-auto max-w-7xl px-6 pb-8 pt-12 md:px-10">
 
-        <div className="flex gap-8 text-xs font-medium text-stone-500">
-          {footerLinks.map((link) => (
-            <a
-              key={link}
-              href="#"
-              className="transition-all hover:text-[#006841]"
-            >
-              {link}
-            </a>
-          ))}
+        {/* Main grid */}
+        <div className="grid grid-cols-2 gap-10 md:grid-cols-[1fr_120px_160px]">
+
+          {/* Brand column */}
+          <div className="col-span-2 md:col-span-1">
+            <BrandLogo
+              logoHeightClassName="h-8"
+              textClassName="text-[1.5rem] tracking-[-0.04em] !text-white"
+              imageClassName="brightness-0 invert"
+            />
+            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/40">
+              The intelligence layer for modern HR leadership. Built for CHROs who move fast.
+            </p>
+          </div>
+
+          {/* Product */}
+          <div>
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+              Product
+            </p>
+            <ul className="space-y-3.5">
+              {productLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-white/55 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <p className="mb-5 text-[10px] font-bold uppercase tracking-[0.25em] text-white/30">
+              Company
+            </p>
+            <ul className="space-y-3.5">
+              {companyLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-white/55 transition-colors hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <p className="text-xs text-stone-400">© 2024 Workenvo. All rights reserved.</p>
+        {/* Bottom bar */}
+        <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-white/8 pt-6 md:flex-row md:items-center">
+          <p className="text-xs text-white/25">
+            © 2025 Workenvo, Inc. All rights reserved.
+          </p>
+          <p className="text-xs text-white/20">
+            Built for the future of work.
+          </p>
+        </div>
+
       </div>
     </footer>
   );

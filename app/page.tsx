@@ -14,20 +14,32 @@ import Footer from "@/components/landing/Footer";
 
 export default function Home() {
   return (
-    <main>
-      <Nav />
-      <Hero />
-      <Problem />
-      <EmotionalReality />
-      <CapabilityLoop />
-      <div id="platform"><ProductSection /></div>
-      <AILayer />
-      <div id="esg"><ESGSection /></div>
-      <div id="for-hr"><OutcomesSection /></div>
-      <div id="for-leaders"><Differentiation /></div>
-      <NewCategory />
-      <div id="pricing"><FinalCTA /></div>
+    <>
+      <main className="relative z-10 mb-[320px]">
+        <Nav />
+        <Hero />
+        <Problem />
+        <EmotionalReality />
+        <CapabilityLoop />
+        <div id="platform">
+          <ProductSection />
+        </div>
+        <AILayer />
+        <div id="esg">
+          <ESGSection />
+        </div>
+        <div id="for-hr">
+          <OutcomesSection />
+        </div>
+        <div id="for-leaders">
+          <Differentiation />
+        </div>
+        <NewCategory />
+        <div id="pricing">
+          <FinalCTA />
+        </div>
+      </main>
       <Footer />
-    </main>
+    </>
   );
 }
