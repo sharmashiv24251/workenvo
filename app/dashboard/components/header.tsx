@@ -26,16 +26,22 @@ export default function DashboardHeader({
         </h1>
       </div>
 
-      <div className="flex gap-4">
-        <button className="rounded-full bg-[#ebe7e7] px-6 py-3 text-sm font-semibold transition-all hover:bg-[#e5e2e1]">
-          {ctaSecondary}
-        </button>
-        <button
-          className={`rounded-full bg-[#008454] px-6 py-3 text-sm font-semibold text-white transition-all hover:scale-105 ${styles.ambientShadow}`}
-        >
-          {ctaPrimary}
-        </button>
-      </div>
+      {(ctaSecondary || ctaPrimary) && (
+        <div className="flex gap-4">
+          {ctaSecondary && (
+            <button className="rounded-full bg-[#ebe7e7] px-6 py-3 text-sm font-semibold transition-all hover:bg-[#e5e2e1]">
+              {ctaSecondary}
+            </button>
+          )}
+          {ctaPrimary && (
+            <button
+              className={`rounded-full bg-[#008454] px-6 py-3 text-sm font-semibold text-white transition-all hover:scale-105 ${styles.ambientShadow}`}
+            >
+              {ctaPrimary}
+            </button>
+          )}
+        </div>
+      )}
     </header>
   );
 }
