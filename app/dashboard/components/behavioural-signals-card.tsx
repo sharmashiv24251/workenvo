@@ -14,6 +14,7 @@ export type RichSignal = {
   id: string;
   title: string;
   description: string;
+  why?: string;
   icon: string;
   iconWrapClass: string;
   badge: string;
@@ -164,6 +165,13 @@ function SignalItem({ signal, onClick }: { signal: RichSignal; onClick: () => vo
         <span className="text-[10px] font-semibold text-stone-400">
           {signal.team} · {signal.period}
         </span>
+      </div>
+
+      <div className="mt-2 flex items-start gap-2 pl-12">
+        <span className="text-[11px] font-semibold text-[#6f7a73]">Why:</span>
+        <p className="text-[12px] leading-relaxed text-[#3e4941]/80">
+          {signal.why ?? signal.triggers[0]}
+        </p>
       </div>
 
       {/* Row 3: sparkline + trend label */}

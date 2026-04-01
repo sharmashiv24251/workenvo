@@ -1,4 +1,6 @@
+import Link from "next/link";
 import styles from "../dashboard.module.css";
+import { getTeamHrefByName } from "./drilldown-data";
 
 const departments = [
   { name: "HR", pct: 92 },
@@ -39,9 +41,18 @@ export default function PerfGoalAchievement() {
       <div className="relative flex-1 space-y-3">
         {sorted.map((dept) => (
           <div key={dept.name} className="flex items-center gap-3">
-            <span className="w-32 flex-shrink-0 text-xs font-semibold text-[#3e4941]">
-              {dept.name}
-            </span>
+            {getTeamHrefByName(dept.name) ? (
+              <Link
+                href={getTeamHrefByName(dept.name)!}
+                className="w-32 flex-shrink-0 text-xs font-semibold text-[#3e4941] transition-colors hover:text-[#006841]"
+              >
+                {dept.name}
+              </Link>
+            ) : (
+              <span className="w-32 flex-shrink-0 text-xs font-semibold text-[#3e4941]">
+                {dept.name}
+              </span>
+            )}
             <div className="relative flex-1">
               {/* Avg dashed line */}
               <div

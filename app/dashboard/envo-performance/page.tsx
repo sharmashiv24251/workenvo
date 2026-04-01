@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import DashboardHeader from "../components/header";
+import ActionImpactLog from "../components/action-impact-log";
 import CapabilityIndexCard from "../components/capability-index-card";
 import AIRecommendationsPanel from "../components/ai-recommendations-panel";
 import BehaviouralSignalsCard from "../components/behavioural-signals-card";
+import { performanceImpacts } from "../components/dashboard-tab-data";
 import ESGMetricsCard from "../components/esg-metrics-card";
 import PerfRatingDistribution from "../components/perf-rating-distribution";
 import PerfGoalAchievement from "../components/perf-goal-achievement";
@@ -47,19 +49,24 @@ export default function PerformancePage() {
           score="78.4"
           trend="-3% vs last month"
           trendPositive={false}
+          href="/dashboard/envo-performance/score"
+          explanation="Your Performance Index fell 3% this month. The main driver is an 11% decline in goal completion over the last 3 sprints, concentrated in Product where milestone slippage and unplanned infrastructure work reduced sprint velocity. That means the score is still recoverable, but only if planning stability improves quickly."
+          weakestDimensionNote="Goal Completion is your weakest pillar. Three Product milestones slipped in the last 3 sprints after two senior engineers were pulled into unplanned infrastructure work, and the delivery drag is now visible in the headline score."
           bars={bars}
           metrics={[
-            { label: "Goal Completion", value: "82%" },
-            { label: "Output Quality", value: "High" },
-            { label: "Responsiveness", value: "Stable" },
-            { label: "Growth Velocity", value: "Accelerating" },
+            { label: "Goal Completion", value: "82%", href: "/dashboard/envo-performance/pillar/goal-completion" },
+            { label: "Output Quality", value: "High", href: "/dashboard/envo-performance/pillar/output-quality" },
+            { label: "Responsiveness", value: "Stable", href: "/dashboard/envo-performance/pillar/responsiveness" },
+            { label: "Growth Velocity", value: "Accelerating", href: "/dashboard/envo-performance/pillar/growth-velocity" },
           ]}
         />
 
         <AIRecommendationsPanel
           insight="Two team members have missed consecutive sprint commitments. Goal completion rate has declined 11% over 3 sprints."
+          because="Product sprint velocity dropped 22% after two senior engineers were redirected to urgent infrastructure work, leaving key launch milestones under-resourced."
           recommendation="Revisit workload distribution in your next planning session. Consider reducing Marcus's active project count from 4 to 2."
           ctaLabel="Review Workload"
+          impacts={performanceImpacts.slice(0, 2)}
         />
 
         <BehaviouralSignalsCard
@@ -69,6 +76,7 @@ export default function PerformancePage() {
               id: "perf-1",
               title: "Deadline Risk: Q2 Product Launch",
               description: "3 of 8 milestones behind schedule",
+              why: "Two senior engineers were pulled into urgent infrastructure work in March, which cut sprint velocity and pushed review queues past SLA.",
               icon: "warning",
               iconWrapClass: "bg-[#ffdad6]/30 text-[#ba1a1a]",
               badgeClass: "bg-[#ffdad6] text-[#93000a]",
@@ -97,6 +105,7 @@ export default function PerformancePage() {
               id: "perf-2",
               title: "Skill Gap Detected: Data Engineering",
               description: "Team capability below threshold for upcoming project needs",
+              why: "Three team members reported low confidence in stream processing while two roadmap projects still depend on Kafka and Spark expertise this quarter.",
               icon: "trending_down",
               iconWrapClass: "bg-[#E6A817]/15 text-[#B07E10]",
               badgeClass: "bg-[#e5e2e1] text-[#3e4941]",
@@ -151,6 +160,8 @@ export default function PerformancePage() {
 
         {/* ── Section 11 — Reward Leaderboard ── */}
         <PerfRewardLeaderboard />
+
+        <ActionImpactLog entries={performanceImpacts} />
       </div>
     </>
   );

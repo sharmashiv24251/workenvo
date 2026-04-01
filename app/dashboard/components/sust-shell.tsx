@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import ActionImpactLog from "./action-impact-log";
 import CapabilityIndexCard from "./capability-index-card";
 import AIRecommendationsPanel from "./ai-recommendations-panel";
 import BehaviouralSignalsCard from "./behavioural-signals-card";
+import { sustainabilityImpacts } from "./dashboard-tab-data";
 import ESGMetricsCard from "./esg-metrics-card";
 import SustKpiRow from "./sust-kpi-row";
 import SustCarbonByCategory from "./sust-carbon-by-category";
@@ -60,19 +62,24 @@ export default function SustainabilityShell() {
               score="88.6"
               trend="+4% vs last quarter"
               trendPositive
+              href="/dashboard/envo-sustainability/score"
+              explanation="Your ESG Health Score rose 4% this quarter. Environmental gains in Berlin and stronger governance reporting are lifting the score, but commute emissions in Dublin remain a drag after office attendance increased. That means the programme is working overall, though behaviour adoption is still uneven by site."
+              weakestDimensionNote="Environmental behaviour adoption is your weakest pressure point. Commute emissions in Dublin rose 18% over the last 8 weeks after the attendance policy shifted to three in-office days, slowing progress against your 2025 target."
               bars={bars}
               metrics={[
-                { label: "Environmental", value: "Strong" },
-                { label: "Social", value: "Growing" },
-                { label: "Governance", value: "Peak" },
-                { label: "Reporting", value: "Compliant" },
+                { label: "Environmental", value: "Strong", href: "/dashboard/envo-sustainability/pillar/environmental" },
+                { label: "Social", value: "Growing", href: "/dashboard/envo-sustainability/pillar/social" },
+                { label: "Governance", value: "Peak", href: "/dashboard/envo-sustainability/pillar/governance" },
+                { label: "Reporting", value: "Compliant", href: "/dashboard/envo-sustainability/pillar/reporting" },
               ]}
             />
 
             <AIRecommendationsPanel
               insight="Carbon footprint per employee is 12% above your stated 2025 target. Remote work adoption has slowed reduction progress."
+              because="Commute-related emissions in Dublin rose 18% after the February attendance policy change reduced remote working days from 2.4 to 1.6 per week."
               recommendation="Introduce a green commute incentive programme and set department-level carbon budgets reviewed quarterly."
               ctaLabel="Launch ESG Nudge"
+              impacts={sustainabilityImpacts}
             />
 
             <BehaviouralSignalsCard
@@ -82,6 +89,7 @@ export default function SustainabilityShell() {
                   id: "sust-1",
                   title: "Commute Emissions Rising: Dublin Office",
                   description: "Carbon footprint from commuting up 18% over 8 weeks",
+                  why: "Remote working days fell from 2.4 to 1.6 per week after the new attendance policy launched in February.",
                   icon: "warning",
                   iconWrapClass: "bg-[#ffdad6]/30 text-[#ba1a1a]",
                   badgeClass: "bg-[#ffdad6] text-[#93000a]",
@@ -110,6 +118,7 @@ export default function SustainabilityShell() {
                   id: "sust-2",
                   title: "Zero Waste Target Hit: Berlin Office",
                   description: "95% waste diversion rate sustained for 3 months",
+                  why: "The composting programme and packaging changes introduced in January stayed active long enough to become a repeatable team habit.",
                   icon: "verified",
                   iconWrapClass: "bg-[#006841]/10 text-[#006841]",
                   badgeClass: "bg-[#dcfce7] text-[#166534]",
@@ -165,6 +174,7 @@ export default function SustainabilityShell() {
                     id: "sust-sec6-1",
                     title: "Commute Emissions Rising: Dublin Office",
                     description: "Average commute carbon up 18% since hybrid policy change",
+                    why: "The shift to three required in-office days reduced remote work quickly, but no green commute incentive was launched at the same time.",
                     icon: "warning",
                     iconWrapClass: "bg-amber-100 text-amber-700",
                     badgeClass: "bg-amber-100 text-amber-800",
@@ -193,6 +203,7 @@ export default function SustainabilityShell() {
                     id: "sust-sec6-2",
                     title: "Zero Waste Target Hit: Berlin Office",
                     description: "Waste diversion rate exceeded 95% for 3 consecutive months",
+                    why: "Berlin combined composting, packaging elimination, and strong local sponsorship, so the behaviour stuck after launch month.",
                     icon: "verified",
                     iconWrapClass: "bg-[#006841]/10 text-[#006841]",
                     badgeClass: "bg-[#dcfce7] text-[#166534]",
@@ -230,6 +241,10 @@ export default function SustainabilityShell() {
           {/* ── Section 8 — Department Leaderboard ── */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
             <SustDeptLeaderboard />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+            <ActionImpactLog entries={sustainabilityImpacts} />
           </div>
         </div>
       )}

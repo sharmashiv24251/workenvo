@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import DashboardHeader from "../components/header";
+import ActionImpactLog from "../components/action-impact-log";
 import CapabilityIndexCard from "../components/capability-index-card";
 import AIRecommendationsPanel from "../components/ai-recommendations-panel";
 import BehaviouralSignalsCard from "../components/behavioural-signals-card";
+import { cultureImpacts } from "../components/dashboard-tab-data";
 import ESGMetricsCard from "../components/esg-metrics-card";
 import CultOrgHealthPulse from "../components/cult-org-health-pulse";
 import CultEmotionalMap from "../components/cult-emotional-map";
@@ -47,19 +49,24 @@ export default function CulturePage() {
           score="81.3"
           trend="+6% vs last month"
           trendPositive
+          href="/dashboard/envo-culture/score"
+          explanation="Your Culture Health Score rose 6% this month. The primary driver is a 12% increase in peer connection activities in Engineering, while recognition remains a drag because Design team's recognition volume dropped 35% over the last 4 weeks. That means belonging is improving, but the score still depends on recognition recovering in weaker teams."
+          weakestDimensionNote="Recognition is your weakest pillar. Peer feedback submissions in Design fell from 28 to 4 over the last 4 weeks after the team lead went on extended leave, and that drop is now pulling the composite score down."
           bars={bars}
           metrics={[
-            { label: "Belonging", value: "Strong" },
-            { label: "Psych. Safety", value: "Growing" },
-            { label: "Recognition", value: "Steady" },
-            { label: "Feedback Culture", value: "Emerging" },
+            { label: "Belonging", value: "Strong", href: "/dashboard/envo-culture/pillar/belonging" },
+            { label: "Psych. Safety", value: "Growing", href: "/dashboard/envo-culture/pillar/psychological-safety" },
+            { label: "Recognition", value: "Steady", href: "/dashboard/envo-culture/pillar/recognition" },
+            { label: "Feedback Culture", value: "Emerging", href: "/dashboard/envo-culture/pillar/feedback-culture" },
           ]}
         />
 
         <AIRecommendationsPanel
           insight="Recognition frequency has dropped 35% this quarter. Teams with low recognition show 2.3x higher attrition risk."
+          because="Peer recognition in Design dropped 35% when the team lead went on leave, and no backup process was put in place to keep the ritual running."
           recommendation="Launch a peer recognition prompt this week. Teams that increased recognition by even 10% saw engagement recover within 3 weeks."
           ctaLabel="Activate Nudge"
+          impacts={cultureImpacts.slice(0, 2)}
         />
 
         <BehaviouralSignalsCard
@@ -69,6 +76,7 @@ export default function CulturePage() {
               id: "culture-1",
               title: "Recognition Gap: Design Team",
               description: "No peer recognition logged in 4 weeks",
+              why: "Meeting participation dropped after the Design lead went on leave in late February, and recognition rituals stopped with them.",
               icon: "warning",
               iconWrapClass: "bg-[#ffdad6]/30 text-[#ba1a1a]",
               badgeClass: "bg-[#ffdad6] text-[#93000a]",
@@ -97,6 +105,7 @@ export default function CulturePage() {
               id: "culture-2",
               title: "Feedback Loop Healthy: Engineering",
               description: "89% of feedback requests completed on time",
+              why: "Structured bi-weekly prompts and manager accountability checks kept overdue feedback items at zero for eight straight weeks.",
               icon: "verified",
               iconWrapClass: "bg-[#006841]/10 text-[#006841]",
               badgeClass: "bg-[#dcfce7] text-[#166534]",
@@ -151,6 +160,8 @@ export default function CulturePage() {
 
         {/* ── Section 11 — Culture Alerts ── */}
         <CultAlertsPatterns />
+
+        <ActionImpactLog entries={cultureImpacts} />
       </div>
     </>
   );

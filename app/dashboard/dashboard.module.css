@@ -37,3 +37,20 @@
 .ambientShadow {
   box-shadow: 0 10px 48px -4px rgba(0, 104, 65, 0.04);
 }
+
+@keyframes detailSectionEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.detailSection {
+  opacity: 0;
+  animation: detailSectionEnter 200ms ease-out forwards;
+}

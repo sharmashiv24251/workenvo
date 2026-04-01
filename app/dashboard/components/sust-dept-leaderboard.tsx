@@ -1,4 +1,6 @@
+import Link from "next/link";
 import styles from "../dashboard.module.css";
+import { getTeamHrefByName } from "./drilldown-data";
 
 type DeptRow = {
   rank: number;
@@ -87,7 +89,16 @@ export default function SustDeptLeaderboard() {
             </div>
 
             {/* Name */}
-            <p className="self-center font-bold text-[#1c1b1b]">{dept.name}</p>
+            {getTeamHrefByName(dept.name) ? (
+              <Link
+                href={getTeamHrefByName(dept.name)!}
+                className="self-center font-bold text-[#1c1b1b] transition-colors hover:text-[#006841]"
+              >
+                {dept.name}
+              </Link>
+            ) : (
+              <p className="self-center font-bold text-[#1c1b1b]">{dept.name}</p>
+            )}
 
             {/* Emissions saved */}
             <p className="hidden self-center text-sm font-bold text-[#006841] md:block">
