@@ -17,7 +17,7 @@ function EmployeeCard({ employee }: { employee: Employee }) {
         {getInitials(employee.name)}
       </div>
       <div className="w-full text-center">
-        <p className="font-bold text-[#1c1b1b] transition-colors group-hover:text-white">
+        <p className={`text-xl leading-none text-[#1c1b1b] transition-colors group-hover:text-white ${styles.displaySerif}`}>
           {employee.name}
         </p>
         <p className="mt-0.5 text-xs text-[#3e4941] transition-colors group-hover:text-white/75">
@@ -39,7 +39,7 @@ export default function EmployeesTab() {
           <span className="rounded-full bg-[#006841]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-[#006841]">
             {employees.length} team members
           </span>
-          <h2 className="mt-2 text-xl font-bold tracking-tight text-[#1c1b1b]">
+          <h2 className={`mt-2 text-3xl leading-none text-[#1c1b1b] ${styles.displaySerif}`}>
             All Employees
           </h2>
         </div>
