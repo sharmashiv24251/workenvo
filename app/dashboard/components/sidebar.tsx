@@ -41,7 +41,7 @@ export default function Sidebar() {
   const showLabelsClass = isExpanded ? "md:inline" : "md:hidden xl:inline";
 
   return (
-    <aside className={`sticky top-0 z-30 hidden h-screen flex-col bg-[#f6f3f2] transition-[width,padding] duration-200 md:flex xl:w-64 xl:p-6 ${expandedClass}`}>
+    <aside className={`sticky top-0 z-30 hidden h-screen shrink-0 flex-col bg-[#f6f3f2] transition-[width,padding] duration-200 md:flex xl:w-64 xl:p-6 ${expandedClass}`}>
       <button
         type="button"
         onClick={() => setIsExpanded((value) => !value)}
@@ -52,7 +52,7 @@ export default function Sidebar() {
           {isExpanded ? "‹" : "›"}
         </span>
       </button>
-      <div className="flex min-h-full flex-col overflow-y-auto">
+      <div className={`flex min-h-full min-w-0 flex-col overflow-x-hidden overflow-y-auto ${styles.hideScrollbar}`}>
         <div className={`relative flex items-center ${isExpanded ? "justify-between pr-8" : "justify-center xl:justify-start xl:pr-8"} xl:justify-between`}>
           <div className={isExpanded ? "block" : "hidden xl:block"}>
             <BrandLogo
@@ -94,7 +94,7 @@ export default function Sidebar() {
                         fill={item.fill}
                         className="text-[24px]"
                       />
-                      <span className={showLabelsClass}>{item.label}</span>
+                      <span className={`${showLabelsClass} min-w-0 truncate`}>{item.label}</span>
                     </Link>
                   );
                 })}
@@ -114,7 +114,7 @@ export default function Sidebar() {
             title="Settings"
           >
             <DashboardIcon name="settings" className="text-[20px]" />
-            <span className={showLabelsClass}>Settings</span>
+            <span className={`${showLabelsClass} min-w-0 truncate`}>Settings</span>
           </Link>
 
           <button
@@ -122,7 +122,7 @@ export default function Sidebar() {
             title="Export Insights"
           >
             <DashboardIcon name="download" className="text-[20px]" />
-            <span className={showLabelsClass}>Export Insights</span>
+            <span className={`${showLabelsClass} min-w-0 truncate`}>Export Insights</span>
           </button>
 
           <div className={`flex items-center gap-3 rounded-[2rem] bg-[#e5e2e1] p-4 ${isExpanded ? "" : "md:justify-center md:p-3 xl:justify-start xl:p-4"} ${styles.glassNav}`}>
@@ -133,9 +133,9 @@ export default function Sidebar() {
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9A36ue4mTCpIwF7EdZZrM0_LHYoRdRRChk_ZhULg8p_LQBPk8N5D--Vexd0l5LtH-fBKezxK31nuOmOjrwolLhudo-e-EsN0m9NYS4Z528eEQAlPQ41SDwU6IaHwaesVe0o0t1m5Px5kunbVZBWIROzbnLAtX-OaH1sWxhKKy-9fAVAhFaThalGGELAU6jZD6YMRuE2n7riKDjPxvIWyq4rhA3miNogy4maqO7cmk7uDIQA-_Yesc_0nOjwxbWrdB-4nmdViJFg"
               />
             </div>
-            <div className={showLabelsClass}>
+            <div className={`${showLabelsClass} min-w-0`}>
               <p className="text-xs font-bold text-[#1c1b1b]">Alex Mercer</p>
-              <p className="text-[10px] text-[#3e4941]">Chief HR Officer</p>
+              <p className="truncate text-[10px] text-[#3e4941]">Chief HR Officer</p>
             </div>
           </div>
         </div>

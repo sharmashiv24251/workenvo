@@ -35,6 +35,15 @@
   -webkit-backdrop-filter: blur(20px);
 }
 
+.hideScrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hideScrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .ambientShadow {
   box-shadow: 0 10px 48px -4px rgba(0, 104, 65, 0.04);
 }
