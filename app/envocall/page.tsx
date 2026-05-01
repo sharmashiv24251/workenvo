@@ -40,6 +40,17 @@ function useInView(threshold = 0.15) {
   return [ref, visible] as const;
 }
 
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < breakpoint);
+    check();
+    window.addEventListener("resize", check, { passive: true });
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 // ─── FadeIn ───────────────────────────────────────────────
 function FadeIn({
   children,
@@ -69,99 +80,242 @@ function FadeIn({
 // ─── Nav ──────────────────────────────────────────────────
 function EnvoCallNav() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isMobile = useIsMobile();
+
   useEffect(() => {
     const h = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", h, { passive: true });
     return () => window.removeEventListener("scroll", h);
   }, []);
 
+  useEffect(() => {
+    if (!isMobile) setMenuOpen(false);
+  }, [isMobile]);
+
+  const navBg = scrolled || menuOpen ? "rgba(249,249,246,0.96)" : "transparent";
+  const navBorder = scrolled || menuOpen ? `1px solid ${C.border}` : "1px solid transparent";
+
   return (
-    <nav
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        padding: "0 32px",
-        height: 64,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: scrolled ? "rgba(249,249,246,0.92)" : "transparent",
-        backdropFilter: scrolled ? "blur(12px)" : "none",
-        WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
-        borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
-        transition: "all 0.3s ease",
-      }}
-    >
-      <Link href="/envocall" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 12 }}>
-        <Image
-          src="/logo.png"
-          alt="envo"
-          width={2521}
-          height={1427}
-          style={{ height: 32, width: "auto", objectFit: "contain" }}
-        />
-        <span
+    <>
+      <nav
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          padding: isMobile ? "0 20px" : "0 32px",
+          height: 64,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: navBg,
+          backdropFilter: scrolled || menuOpen ? "blur(12px)" : "none",
+          WebkitBackdropFilter: scrolled || menuOpen ? "blur(12px)" : "none",
+          borderBottom: navBorder,
+          transition: "all 0.3s ease",
+        }}
+      >
+        <Link href="/envocall" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 12 }}>
+          <Image
+            src="/logo.png"
+            alt="envo"
+            width={2521}
+            height={1427}
+            style={{ height: 32, width: "auto", objectFit: "contain" }}
+          />
+          <span
+            style={{
+              fontFamily: "var(--font-brand), var(--font-sans), sans-serif",
+              fontSize: 20,
+              letterSpacing: "-0.03em",
+              color: "#16855B",
+              lineHeight: 1,
+              textTransform: "lowercase",
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>envo</span>
+            <span style={{ fontWeight: 700 }}>call</span>
+          </span>
+        </Link>
+
+        {isMobile ? (
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 8,
+              display: "flex",
+              flexDirection: "column",
+              gap: 5,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                display: "block",
+                width: 22,
+                height: 2,
+                background: C.textPri,
+                borderRadius: 2,
+                transformOrigin: "center",
+                transform: menuOpen ? "translateY(7px) rotate(45deg)" : "none",
+                transition: "transform 0.25s ease",
+              }}
+            />
+            <span
+              style={{
+                display: "block",
+                width: 22,
+                height: 2,
+                background: C.textPri,
+                borderRadius: 2,
+                opacity: menuOpen ? 0 : 1,
+                transition: "opacity 0.2s ease",
+              }}
+            />
+            <span
+              style={{
+                display: "block",
+                width: 22,
+                height: 2,
+                background: C.textPri,
+                borderRadius: 2,
+                transformOrigin: "center",
+                transform: menuOpen ? "translateY(-7px) rotate(-45deg)" : "none",
+                transition: "transform 0.25s ease",
+              }}
+            />
+          </button>
+        ) : (
+          <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
+            {["Features", "How it works", "Pricing"].map((item) => (
+              <a
+                key={item}
+                href="#"
+                style={{
+                  fontFamily: "var(--font-sans)",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: C.textSec,
+                  textDecoration: "none",
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = C.textPri)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = C.textSec)}
+              >
+                {item}
+              </a>
+            ))}
+            <a
+              href={`mailto:saransh@envo.club?subject=Book%20a%20Demo%20-%20envoCall&body=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20for%20envoCall.`}
+              style={{
+                fontFamily: "var(--font-sans)",
+                padding: "8px 20px",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                background: ACCENT,
+                color: C.white,
+                textDecoration: "none",
+                transition: "opacity 0.2s",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+            >
+              Book a Demo
+            </a>
+          </div>
+        )}
+      </nav>
+
+      {/* Mobile dropdown menu */}
+      {isMobile && (
+        <div
           style={{
-            fontFamily: "var(--font-brand), var(--font-sans), sans-serif",
-            fontSize: 20,
-            letterSpacing: "-0.03em",
-            color: "#16855B",
-            lineHeight: 1,
-            textTransform: "lowercase",
+            position: "fixed",
+            top: 64,
+            left: 0,
+            right: 0,
+            zIndex: 99,
+            background: "rgba(249,249,246,0.97)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            borderBottom: `1px solid ${C.border}`,
+            padding: menuOpen ? "20px 20px 28px" : "0 20px",
+            maxHeight: menuOpen ? 320 : 0,
+            overflow: "hidden",
+            transition: "all 0.3s ease",
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
           }}
         >
-          <span style={{ fontWeight: 500 }}>envo</span>
-          <span style={{ fontWeight: 700 }}>call</span>
-        </span>
-      </Link>
-
-      <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
-        {["Features", "How it works", "Pricing"].map((item) => (
+          {["Features", "How it works", "Pricing"].map((item) => (
+            <a
+              key={item}
+              href="#"
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontFamily: "var(--font-sans)",
+                fontSize: 16,
+                fontWeight: 500,
+                color: C.textPri,
+                textDecoration: "none",
+                padding: "12px 0",
+                borderBottom: `1px solid ${C.border}`,
+              }}
+            >
+              {item}
+            </a>
+          ))}
           <a
-            key={item}
-            href="#"
+            href={`mailto:saransh@envo.club?subject=Book%20a%20Demo%20-%20envoCall&body=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20for%20envoCall.`}
+            onClick={() => setMenuOpen(false)}
             style={{
               fontFamily: "var(--font-sans)",
-              fontSize: 14,
-              fontWeight: 500,
-              color: C.textSec,
+              marginTop: 12,
+              padding: "14px 20px",
+              borderRadius: 12,
+              fontSize: 15,
+              fontWeight: 600,
+              background: ACCENT,
+              color: C.white,
               textDecoration: "none",
-              transition: "color 0.2s",
+              textAlign: "center",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = C.textPri)}
-            onMouseLeave={(e) => (e.currentTarget.style.color = C.textSec)}
           >
-            {item}
+            Book a Demo
           </a>
-        ))}
-        <a
-          href="#demo"
-          style={{
-            fontFamily: "var(--font-sans)",
-            padding: "8px 20px",
-            borderRadius: 8,
-            fontSize: 14,
-            fontWeight: 600,
-            background: ACCENT,
-            color: C.white,
-            textDecoration: "none",
-            transition: "opacity 0.2s",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-        >
-          Book a Demo
-        </a>
-      </div>
-    </nav>
+        </div>
+      )}
+    </>
   );
 }
 
 // ─── Hero Dashboard Visual ────────────────────────────────
+const DASH_W = 960;
+const DASH_H = 600; // 16:10
+
 function HeroDashboard() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setScale(entry.contentRect.width / DASH_W);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
   const hourly = [2, 5, 12, 21, 28, 25, 19, 17, 23, 20, 15, 9, 4];
   const maxH = 28;
 
@@ -181,166 +335,185 @@ function HeroDashboard() {
   const F = "var(--font-sans)";
 
   return (
-    <div style={{
-      background: C.bgCard,
-      borderRadius: 20,
-      border: `1px solid ${C.border}`,
-      overflow: "hidden",
-      boxShadow: `0 10px 56px -4px rgba(${ACCENT_RGB},0.10), 0 2px 16px rgba(0,0,0,0.06)`,
-    }}>
-
-      {/* Window chrome */}
-      <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "11px 20px", borderBottom: `1px solid ${C.border}`, background: C.bgSoft }}>
-        {[ACCENT, "#f59e0b", "#ef4444"].map((c, i) => (
-          <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, opacity: 0.75 }} />
-        ))}
-        <span style={{ fontFamily: F, fontSize: 12, color: C.textTer, marginLeft: 8, fontWeight: 500 }}>
-          envoCall · HVAC Operations
-        </span>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "block", animation: "ecPulse 2s infinite" }} />
-          <span style={{ fontFamily: F, fontSize: 11, color: "#22c55e", fontWeight: 700 }}>LIVE</span>
+    <div
+      ref={containerRef}
+      style={{
+        width: "100%",
+        aspectRatio: `${DASH_W} / ${DASH_H}`,
+        position: "relative",
+        overflow: "hidden",
+        borderRadius: 20,
+        border: `1px solid ${C.border}`,
+        boxShadow: `0 10px 56px -4px rgba(${ACCENT_RGB},0.10), 0 2px 16px rgba(0,0,0,0.06)`,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: DASH_W,
+          height: DASH_H,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+          background: C.bgCard,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Window chrome */}
+        <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "11px 20px", borderBottom: `1px solid ${C.border}`, background: C.bgSoft, flexShrink: 0 }}>
+          {[ACCENT, "#f59e0b", "#ef4444"].map((c, i) => (
+            <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, opacity: 0.75 }} />
+          ))}
+          <span style={{ fontFamily: F, fontSize: 12, color: C.textTer, marginLeft: 8, fontWeight: 500 }}>
+            envoCall · HVAC Operations
+          </span>
+          <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6 }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e", display: "block", animation: "ecPulse 2s infinite" }} />
+            <span style={{ fontFamily: F, fontSize: 11, color: "#22c55e", fontWeight: 700 }}>LIVE</span>
+          </div>
         </div>
-      </div>
 
-      {/* Two-column body */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 248px" }}>
+        {/* Two-column body */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 248px", flex: 1, overflow: "hidden" }}>
 
-        {/* Left: chart + stats + recent routes */}
-        <div style={{ padding: "22px 26px", borderRight: `1px solid ${C.border}` }}>
+          {/* Left: chart + stats + recent routes */}
+          <div style={{ padding: "22px 26px", borderRight: `1px solid ${C.border}`, overflow: "hidden" }}>
 
-          {/* Title + big number */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
-            <div>
-              <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: C.textPri }}>Calls Received &amp; Routed</div>
-              <div style={{ fontFamily: F, fontSize: 12, color: C.textSec, marginTop: 2 }}>AI answered every call — routed to WhatsApp</div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: F, fontSize: 34, fontWeight: 900, color: ACCENT, lineHeight: 1, letterSpacing: "-0.02em" }}>47</div>
-              <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: "#22c55e", marginTop: 2 }}>0 missed · 100% answered</div>
-            </div>
-          </div>
-
-          {/* Arch bar chart */}
-          <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 80 }}>
-            {hourly.map((v, i) => (
-              <div key={i} style={{
-                flex: 1, height: `${(v / maxH) * 100}%`,
-                borderRadius: "9999px 9999px 3px 3px",
-                background: v >= 20 ? ACCENT : `rgba(${ACCENT_RGB},0.2)`,
-              }} />
-            ))}
-          </div>
-          <div style={{ display: "flex", gap: 4, marginTop: 5 }}>
-            {["6A","7A","8A","9A","10A","11A","12P","1P","2P","3P","4P","5P","6P"].map((h, i) => (
-              <div key={i} style={{ flex: 1, textAlign: "center", fontFamily: F, fontSize: 9, color: C.textTer }}>
-                {i % 2 === 0 ? h : ""}
+            {/* Title + big number */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+              <div>
+                <div style={{ fontFamily: F, fontSize: 15, fontWeight: 700, color: C.textPri }}>Calls Received &amp; Routed</div>
+                <div style={{ fontFamily: F, fontSize: 12, color: C.textSec, marginTop: 2 }}>AI answered every call — routed to WhatsApp</div>
               </div>
-            ))}
-          </div>
-
-          {/* Stat columns */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-            {statCols.map((s, i) => (
-              <div key={i}>
-                <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: C.textTer, marginBottom: 4 }}>
-                  {s.cat}
-                </div>
-                <div style={{ fontFamily: F, fontSize: 14, fontWeight: 800, color: C.textPri }}>{s.val}</div>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontFamily: F, fontSize: 34, fontWeight: 900, color: ACCENT, lineHeight: 1, letterSpacing: "-0.02em" }}>47</div>
+                <div style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: "#22c55e", marginTop: 2 }}>0 missed · 100% answered</div>
               </div>
-            ))}
-          </div>
-
-          {/* Recent routes — compact rows */}
-          <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
-            <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: C.textTer, marginBottom: 10 }}>
-              Recent Routes
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {recentRoutes.map((r, i) => (
+
+            {/* Arch bar chart */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 80 }}>
+              {hourly.map((v, i) => (
                 <div key={i} style={{
-                  display: "flex", alignItems: "center", gap: 10,
-                  padding: "8px 11px", borderRadius: 10,
-                  background: C.bgSoft,
-                }}>
-                  <div style={{
-                    width: 28, height: 28, borderRadius: 7, flexShrink: 0,
-                    background: `rgba(${ACCENT_RGB},0.12)`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontFamily: F, fontSize: 11, fontWeight: 800, color: ACCENT,
-                  }}>
-                    {r.caller[0]}
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: C.textPri }}>{r.caller}</span>
-                    <span style={{ fontFamily: F, fontSize: 11, color: C.textSec, marginLeft: 6 }}>— {r.summary}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
-                    <span style={{ fontFamily: F, fontSize: 10, color: C.textTer }}>→</span>
-                    <span style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: ACCENT }}>{r.routed}</span>
-                    <span style={{ fontFamily: F, fontSize: 10, color: C.textTer }}>{r.ago}</span>
-                  </div>
+                  flex: 1, height: `${(v / maxH) * 100}%`,
+                  borderRadius: "9999px 9999px 3px 3px",
+                  background: v >= 20 ? ACCENT : `rgba(${ACCENT_RGB},0.2)`,
+                }} />
+              ))}
+            </div>
+            <div style={{ display: "flex", gap: 4, marginTop: 5 }}>
+              {["6A","7A","8A","9A","10A","11A","12P","1P","2P","3P","4P","5P","6P"].map((h, i) => (
+                <div key={i} style={{ flex: 1, textAlign: "center", fontFamily: F, fontSize: 9, color: C.textTer }}>
+                  {i % 2 === 0 ? h : ""}
                 </div>
               ))}
             </div>
+
+            {/* Stat columns */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", marginTop: 16, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
+              {statCols.map((s, i) => (
+                <div key={i}>
+                  <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.16em", color: C.textTer, marginBottom: 4 }}>
+                    {s.cat}
+                  </div>
+                  <div style={{ fontFamily: F, fontSize: 14, fontWeight: 800, color: C.textPri }}>{s.val}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Recent routes — compact rows */}
+            <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${C.border}` }}>
+              <div style={{ fontFamily: F, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.14em", color: C.textTer, marginBottom: 10 }}>
+                Recent Routes
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {recentRoutes.map((r, i) => (
+                  <div key={i} style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    padding: "8px 11px", borderRadius: 10,
+                    background: C.bgSoft,
+                  }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 7, flexShrink: 0,
+                      background: `rgba(${ACCENT_RGB},0.12)`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontFamily: F, fontSize: 11, fontWeight: 800, color: ACCENT,
+                    }}>
+                      {r.caller[0]}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontFamily: F, fontSize: 12, fontWeight: 700, color: C.textPri }}>{r.caller}</span>
+                      <span style={{ fontFamily: F, fontSize: 11, color: C.textSec, marginLeft: 6 }}>— {r.summary}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5, flexShrink: 0 }}>
+                      <span style={{ fontFamily: F, fontSize: 10, color: C.textTer }}>→</span>
+                      <span style={{ fontFamily: F, fontSize: 11, fontWeight: 700, color: ACCENT }}>{r.routed}</span>
+                      <span style={{ fontFamily: F, fontSize: 10, color: C.textTer }}>{r.ago}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Right: dark green AI routing panel */}
-        <div style={{ background: ACCENT, padding: "22px 20px", display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 18 }}>
-            <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>✦</span>
-            <span style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: "#fff" }}>AI routing now</span>
-          </div>
+          {/* Right: dark green AI routing panel */}
+          <div style={{ background: ACCENT, padding: "22px 20px", display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 18 }}>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)" }}>✦</span>
+              <span style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: "#fff" }}>AI routing now</span>
+            </div>
 
-          {/* Active call */}
-          <div style={{
-            padding: "11px 13px", borderRadius: 11,
-            background: "rgba(255,255,255,0.11)",
-            border: "1px solid rgba(255,255,255,0.16)",
-            marginBottom: 14,
-          }}>
-            <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 5 }}>
-              ACTIVE CALL
+            {/* Active call */}
+            <div style={{
+              padding: "11px 13px", borderRadius: 11,
+              background: "rgba(255,255,255,0.11)",
+              border: "1px solid rgba(255,255,255,0.16)",
+              marginBottom: 14,
+            }}>
+              <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 5 }}>
+                ACTIVE CALL
+              </div>
+              <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 3 }}>Karen Willis</div>
+              <div style={{ fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.78)", lineHeight: 1.5 }}>
+                &ldquo;My AC stopped working since last night&rdquo;
+              </div>
             </div>
-            <div style={{ fontFamily: F, fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 3 }}>Karen Willis</div>
-            <div style={{ fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.78)", lineHeight: 1.5 }}>
-              &ldquo;My AC stopped working since last night&rdquo;
-            </div>
-          </div>
 
-          <div style={{ height: 1, background: "rgba(255,255,255,0.13)", marginBottom: 14 }} />
+            <div style={{ height: 1, background: "rgba(255,255,255,0.13)", marginBottom: 14 }} />
 
-          <div style={{ marginBottom: 12 }}>
-            <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 5 }}>
-              AI DETECTED
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 5 }}>
+                AI DETECTED
+              </div>
+              <div style={{ fontFamily: F, fontSize: 12, color: "rgba(255,255,255,0.9)", lineHeight: 1.55 }}>
+                AC breakdown · Urgent · Residential
+              </div>
             </div>
-            <div style={{ fontFamily: F, fontSize: 12, color: "rgba(255,255,255,0.9)", lineHeight: 1.55 }}>
-              AC breakdown · Urgent · Residential
-            </div>
-          </div>
 
-          <div style={{ flex: 1, marginBottom: 16 }}>
-            <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 5 }}>
-              ROUTING VIA WHATSAPP
+            <div style={{ flex: 1, marginBottom: 16 }}>
+              <div style={{ fontFamily: F, fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", marginBottom: 5 }}>
+                ROUTING VIA WHATSAPP
+              </div>
+              <div style={{ fontFamily: F, fontSize: 12, color: "rgba(255,255,255,0.9)", lineHeight: 1.55 }}>
+                Mike Davis · Field Tech
+              </div>
+              <div style={{ fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>
+                Summary + address sent
+              </div>
             </div>
-            <div style={{ fontFamily: F, fontSize: 12, color: "rgba(255,255,255,0.9)", lineHeight: 1.55 }}>
-              Mike Davis · Field Tech
-            </div>
-            <div style={{ fontFamily: F, fontSize: 11, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>
-              Summary + address sent
-            </div>
-          </div>
 
-          {/* Delivered */}
-          <div style={{
-            display: "flex", alignItems: "center", gap: 7,
-            padding: "9px 13px", borderRadius: 9,
-            background: "rgba(255,255,255,0.13)",
-            border: "1px solid rgba(255,255,255,0.18)",
-          }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "block", flexShrink: 0, animation: "ecPulse 2s infinite" }} />
-            <span style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: "#fff" }}>WhatsApp delivered · just now</span>
+            {/* Delivered */}
+            <div style={{
+              display: "flex", alignItems: "center", gap: 7,
+              padding: "9px 13px", borderRadius: 9,
+              background: "rgba(255,255,255,0.13)",
+              border: "1px solid rgba(255,255,255,0.18)",
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "block", flexShrink: 0, animation: "ecPulse 2s infinite" }} />
+              <span style={{ fontFamily: F, fontSize: 11, fontWeight: 600, color: "#fff" }}>WhatsApp delivered · just now</span>
+            </div>
           </div>
         </div>
       </div>
@@ -350,6 +523,7 @@ function HeroDashboard() {
 
 // ─── Hero ─────────────────────────────────────────────────
 function Hero() {
+  const isMobile = useIsMobile();
   return (
     <section
       style={{
@@ -358,7 +532,7 @@ function Hero() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "120px 32px 80px",
+        padding: isMobile ? "90px 20px 60px" : "120px 32px 80px",
         position: "relative",
         overflow: "hidden",
         background: C.bg,
@@ -379,6 +553,7 @@ function Hero() {
       <div
         style={{
           maxWidth: 820,
+          width: "100%",
           textAlign: "center",
           position: "relative",
           zIndex: 1,
@@ -396,7 +571,7 @@ function Hero() {
             background: `rgba(${ACCENT_RGB},0.07)`,
             marginBottom: 32,
             fontFamily: "var(--font-sans)",
-            fontSize: 13,
+            fontSize: isMobile ? 11 : 13,
             fontWeight: 500,
             color: ACCENT,
           }}
@@ -417,7 +592,7 @@ function Hero() {
         <h1
           style={{
             fontFamily: "var(--font-serif)",
-            fontSize: "clamp(44px, 7vw, 78px)",
+            fontSize: "clamp(36px, 7vw, 78px)",
             lineHeight: 1.1,
             letterSpacing: "-0.025em",
             color: C.textPri,
@@ -436,7 +611,7 @@ function Hero() {
         <p
           style={{
             fontFamily: "var(--font-sans)",
-            fontSize: 20,
+            fontSize: isMobile ? 16 : 20,
             color: C.textSec,
             maxWidth: 560,
             margin: "0 auto 40px",
@@ -459,12 +634,12 @@ function Hero() {
           }}
         >
           <a
-            href="#demo"
+            href={`mailto:saransh@envo.club?subject=Book%20a%20Demo%20-%20envoCall&body=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20for%20envoCall.`}
             style={{
               fontFamily: "var(--font-sans)",
-              padding: "14px 32px",
+              padding: isMobile ? "13px 28px" : "14px 32px",
               borderRadius: 16,
-              fontSize: 16,
+              fontSize: isMobile ? 15 : 16,
               fontWeight: 600,
               background: ACCENT,
               color: C.white,
@@ -487,9 +662,9 @@ function Hero() {
             href="#how"
             style={{
               fontFamily: "var(--font-sans)",
-              padding: "14px 32px",
+              padding: isMobile ? "13px 28px" : "14px 32px",
               borderRadius: 16,
-              fontSize: 16,
+              fontSize: isMobile ? 15 : 16,
               fontWeight: 500,
               border: `1px solid ${C.border}`,
               color: C.textPri,
@@ -538,6 +713,7 @@ function Hero() {
 
 // ─── Problem ──────────────────────────────────────────────
 function Problem() {
+  const isMobile = useIsMobile();
   const problems = [
     {
       icon: "📵",
@@ -557,7 +733,7 @@ function Problem() {
   ];
 
   return (
-    <section style={{ padding: "100px 32px", background: C.bgSoft }}>
+    <section style={{ padding: isMobile ? "72px 20px" : "100px 32px", background: C.bgSoft }}>
       <div style={{ maxWidth: 1080, margin: "0 auto" }}>
         <FadeIn>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
@@ -577,7 +753,7 @@ function Problem() {
             <h2
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(32px, 4vw, 48px)",
+                fontSize: "clamp(28px, 4vw, 48px)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 color: C.textPri,
@@ -589,7 +765,7 @@ function Problem() {
             <p
               style={{
                 fontFamily: "var(--font-sans)",
-                fontSize: 18,
+                fontSize: isMobile ? 16 : 18,
                 color: C.textSec,
                 maxWidth: 520,
                 margin: "0 auto",
@@ -602,8 +778,8 @@ function Problem() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 24,
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+            gap: 20,
           }}
         >
           {problems.map((p, i) => (
@@ -616,7 +792,6 @@ function Problem() {
                   padding: "32px 28px",
                   boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
                   transition: "box-shadow 0.2s, transform 0.2s",
-                  height: "100%",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.08)";
@@ -661,6 +836,7 @@ function Problem() {
 
 // ─── How It Works ─────────────────────────────────────────
 function HowItWorks() {
+  const isMobile = useIsMobile();
   const steps = [
     {
       num: "01",
@@ -685,7 +861,7 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how" style={{ padding: "100px 32px", background: C.bg }}>
+    <section id="how" style={{ padding: isMobile ? "72px 20px" : "100px 32px", background: C.bg }}>
       <div style={{ maxWidth: 1080, margin: "0 auto" }}>
         <FadeIn>
           <div style={{ textAlign: "center", marginBottom: 72 }}>
@@ -705,7 +881,7 @@ function HowItWorks() {
             <h2
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(32px, 4vw, 48px)",
+                fontSize: "clamp(28px, 4vw, 48px)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 color: C.textPri,
@@ -718,8 +894,8 @@ function HowItWorks() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: 24,
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+            gap: 20,
           }}
         >
           {steps.map((s, i) => (
@@ -794,6 +970,8 @@ function HowItWorks() {
 
 // ─── Features ─────────────────────────────────────────────
 function Features() {
+  const isMobile = useIsMobile();
+  const isTablet = useIsMobile(1024);
   const features = [
     {
       icon: (
@@ -857,8 +1035,10 @@ function Features() {
     },
   ];
 
+  const cols = isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)";
+
   return (
-    <section style={{ padding: "100px 32px", background: C.bgSoft }}>
+    <section style={{ padding: isMobile ? "72px 20px" : "100px 32px", background: C.bgSoft }}>
       <div style={{ maxWidth: 1080, margin: "0 auto" }}>
         <FadeIn>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
@@ -878,7 +1058,7 @@ function Features() {
             <h2
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(32px, 4vw, 48px)",
+                fontSize: "clamp(28px, 4vw, 48px)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 color: C.textPri,
@@ -890,7 +1070,7 @@ function Features() {
             <p
               style={{
                 fontFamily: "var(--font-sans)",
-                fontSize: 18,
+                fontSize: isMobile ? 16 : 18,
                 color: C.textSec,
                 maxWidth: 480,
                 margin: "0 auto",
@@ -903,7 +1083,7 @@ function Features() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: cols,
             gap: 20,
           }}
         >
@@ -917,7 +1097,6 @@ function Features() {
                   borderRadius: 16,
                   boxShadow: "0 1px 8px rgba(0,0,0,0.04)",
                   transition: "all 0.2s",
-                  height: "100%",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = "0 6px 28px rgba(0,0,0,0.08)";
@@ -977,6 +1156,7 @@ function Features() {
 
 // ─── Social Proof ─────────────────────────────────────────
 function SocialProof() {
+  const isMobile = useIsMobile();
   const testimonials = [
     {
       quote:
@@ -995,7 +1175,7 @@ function SocialProof() {
   ];
 
   return (
-    <section style={{ padding: "100px 32px", background: C.bg }}>
+    <section style={{ padding: isMobile ? "72px 20px" : "100px 32px", background: C.bg }}>
       <div style={{ maxWidth: 1080, margin: "0 auto" }}>
         <FadeIn>
           <div style={{ textAlign: "center", marginBottom: 64 }}>
@@ -1015,7 +1195,7 @@ function SocialProof() {
             <h2
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(32px, 4vw, 48px)",
+                fontSize: "clamp(28px, 4vw, 48px)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 color: C.textPri,
@@ -1031,7 +1211,7 @@ function SocialProof() {
           <div
             style={{
               display: "flex",
-              gap: 48,
+              gap: 24,
               justifyContent: "center",
               alignItems: "center",
               marginBottom: 64,
@@ -1064,11 +1244,11 @@ function SocialProof() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 1,
-              background: C.border,
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+              gap: isMobile ? 12 : 1,
+              background: isMobile ? "transparent" : C.border,
               borderRadius: 16,
-              overflow: "hidden",
+              overflow: isMobile ? "visible" : "hidden",
               marginBottom: 48,
             }}
           >
@@ -1083,6 +1263,8 @@ function SocialProof() {
                   padding: "40px",
                   textAlign: "center",
                   background: C.bgCard,
+                  borderRadius: isMobile ? 16 : 0,
+                  border: isMobile ? `1px solid ${C.border}` : "none",
                 }}
               >
                 <div
@@ -1115,7 +1297,7 @@ function SocialProof() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
+            gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
             gap: 24,
           }}
         >
@@ -1210,6 +1392,7 @@ function SocialProof() {
 
 // ─── Benefits ─────────────────────────────────────────────
 function Benefits() {
+  const isMobile = useIsMobile();
   const benefits = [
     "Zero missed calls",
     "Instant team notification",
@@ -1222,14 +1405,14 @@ function Benefits() {
   ];
 
   return (
-    <section style={{ padding: "100px 32px", background: C.bgSoft }}>
+    <section style={{ padding: isMobile ? "72px 20px" : "100px 32px", background: C.bgSoft }}>
       <div
         style={{
           maxWidth: 1080,
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: 80,
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gap: isMobile ? 48 : 80,
           alignItems: "center",
         }}
       >
@@ -1251,7 +1434,7 @@ function Benefits() {
             <h2
               style={{
                 fontFamily: "var(--font-serif)",
-                fontSize: "clamp(30px, 3.5vw, 44px)",
+                fontSize: "clamp(26px, 3.5vw, 44px)",
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 color: C.textPri,
@@ -1265,7 +1448,7 @@ function Benefits() {
             <p
               style={{
                 fontFamily: "var(--font-sans)",
-                fontSize: 16,
+                fontSize: isMobile ? 15 : 16,
                 color: C.textSec,
                 lineHeight: 1.7,
                 marginBottom: 32,
@@ -1276,7 +1459,7 @@ function Benefits() {
               day and report measurably better customer outcomes.
             </p>
             <a
-              href="#demo"
+              href={`mailto:saransh@envo.club?subject=Book%20a%20Demo%20-%20envoCall&body=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20for%20envoCall.`}
               style={{
                 fontFamily: "var(--font-sans)",
                 display: "inline-block",
@@ -1307,7 +1490,7 @@ function Benefits() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
               gap: 12,
             }}
           >
@@ -1357,21 +1540,13 @@ function Benefits() {
 
 // ─── CTA Section ──────────────────────────────────────────
 function CTASection() {
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (email.includes("@")) {
-      setSubmitted(true);
-    }
-  }
+  const isMobile = useIsMobile();
 
   return (
     <section
       id="demo"
       style={{
-        padding: "100px 32px",
+        padding: isMobile ? "80px 20px" : "100px 32px",
         background: ACCENT,
         position: "relative",
         overflow: "hidden",
@@ -1399,7 +1574,7 @@ function CTASection() {
           <h2
             style={{
               fontFamily: "var(--font-serif)",
-              fontSize: "clamp(32px, 4vw, 52px)",
+              fontSize: "clamp(28px, 4vw, 52px)",
               lineHeight: 1.15,
               letterSpacing: "-0.025em",
               color: C.white,
@@ -1411,7 +1586,7 @@ function CTASection() {
           <p
             style={{
               fontFamily: "var(--font-sans)",
-              fontSize: 18,
+              fontSize: isMobile ? 16 : 18,
               color: "rgba(255,255,255,0.75)",
               marginBottom: 40,
               lineHeight: 1.6,
@@ -1420,74 +1595,32 @@ function CTASection() {
             See envoCall in action. Book a 20-minute demo and we&apos;ll walk
             you through a live setup tailored to your team.
           </p>
-          {submitted ? (
-            <div
-              style={{
-                padding: "20px 32px",
-                borderRadius: 16,
-                background: "rgba(255,255,255,0.15)",
-                fontFamily: "var(--font-sans)",
-                color: C.white,
-                fontSize: 16,
-                fontWeight: 500,
-              }}
-            >
-              ✓ Thanks! We&apos;ll reach out within one business day.
-            </div>
-          ) : (
-            <form
-              onSubmit={handleSubmit}
-              style={{
-                display: "flex",
-                gap: 10,
-                justifyContent: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              <input
-                type="email"
-                placeholder="Your work email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  padding: "14px 20px",
-                  borderRadius: 16,
-                  border: "none",
-                  fontSize: 15,
-                  width: 300,
-                  outline: "none",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
-                  color: C.textPri,
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  fontFamily: "var(--font-sans)",
-                  padding: "14px 28px",
-                  borderRadius: 16,
-                  border: "none",
-                  fontSize: 15,
-                  fontWeight: 600,
-                  background: C.white,
-                  color: ACCENT,
-                  cursor: "pointer",
-                  boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
-                  transition: "all 0.2s",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "translateY(-1px)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "none")
-                }
-              >
-                Book a Demo
-              </button>
-            </form>
-          )}
+          <a
+            href={`mailto:saransh@envo.club?subject=Book%20a%20Demo%20-%20envoCall&body=Hi%2C%20I%27d%20like%20to%20book%20a%20demo%20for%20envoCall.`}
+            style={{
+              fontFamily: "var(--font-sans)",
+              display: "inline-block",
+              padding: isMobile ? "15px 36px" : "17px 44px",
+              borderRadius: 16,
+              fontSize: isMobile ? 16 : 17,
+              fontWeight: 600,
+              background: C.white,
+              color: ACCENT,
+              textDecoration: "none",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-2px)";
+              e.currentTarget.style.boxShadow = "0 8px 32px rgba(0,0,0,0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "none";
+              e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.15)";
+            }}
+          >
+            Book a Demo
+          </a>
           <p
             style={{
               fontFamily: "var(--font-sans)",
