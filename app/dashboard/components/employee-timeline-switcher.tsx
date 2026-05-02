@@ -94,7 +94,7 @@ function TimelineCard({
   index: number;
   isLatest: boolean;
 }) {
-  const tone = toneStyles[event.tone];
+  const tone = isLatest ? toneStyles.positive : toneStyles[event.tone];
   const isLeft = index % 2 === 0;
 
   return (
